@@ -1,89 +1,183 @@
 'use client';
 
-import { useStore } from '../context/StoreContext';
-import { ProcessIndicator } from '../components/ProcessIndicator';
-import { ProductCard } from '../components/ProductCard';
+import React, { useState } from 'react';
+import { Product } from '../types/product';
+import { ProductFormData } from '../types/product';
+import { useProducts } from '../hooks/useProducts';
+import { useCart } from '../hooks/useCart';
+import { useToast } from '../hooks/useToast';
+import { Header } from '../components/layout/Header';
+import { ProductList } from '../components/products/ProductList';
+import { ProductForm } from '../components/products/ProductForm';
+import { CartDrawer } from '../components/cart/CartDrawer';
+import { Modal } from '../components/ui/Modal';
+import { ConfirmDialog } from '../components/ui/ConfirmDialog';
+import { ToastContainer } from '../components/ui/Toast';
 
 export default function Home() {
-    const { products, prices, inventory, isProcessing, runAllProcesses, integratedData } = useStore();
+    // Hooks de estado
+    const {
+        products,
+        isLoaded,
+        searchTerm,
+        setSearchTerm,
+        categoryFilter,
+        setCategoryFilter,
+        availableCategories,
+        addProduct,
+        updateProduct,
+        deleteProduct,
+        allProducts,
+    } = useProducts();
 
-    const handleStart = () => {
-        runAllProcesses();
+    const {
+        items: cartItems,
+        cartCount,
+        cartTotal,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart,
+        syncCartWithProducts,
+    } = useCart();
+
+    const { toasts, removeToast, success, error } = useToast();
+
+    // Sincronizar carrito cuando cambian los productos (edición/eliminación)
+    React.useEffect(() => {
+        if (isLoaded) {
+            syncCartWithProducts(allProducts);
+        }
+    }, [allProducts, isLoaded, syncCartWithProducts]);
+
+    // Estado de UI
+    const [isCartOpen, setIsCartOpen] = useState(false);
+    const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+    const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
+
+    // Handlers de productos
+    const handleNewProduct = () => {
+        setEditingProduct(null);
+        setIsFormModalOpen(true);
     };
 
-    const allFinished = !isProcessing && (products.data || products.error);
+    const handleEditProduct = (product: Product) => {
+        setEditingProduct(product);
+        setIsFormModalOpen(true);
+    };
+
+    const handleFormSubmit = (formData: ProductFormData) => {
+        if (editingProduct) {
+            updateProduct(editingProduct.id, formData);
+            success(`"${formData.name}" actualizado correctamente`);
+        } else {
+            addProduct(formData);
+            success(`"${formData.name}" creado correctamente`);
+        }
+        setIsFormModalOpen(false);
+        setEditingProduct(null);
+    };
+
+    const handleFormCancel = () => {
+        setIsFormModalOpen(false);
+        setEditingProduct(null);
+    };
+
+    const handleDeleteRequest = (product: Product) => {
+        setDeletingProduct(product);
+    };
+
+    const handleDeleteConfirm = () => {
+        if (deletingProduct) {
+            deleteProduct(deletingProduct.id);
+            removeFromCart(deletingProduct.id);
+            success(`"${deletingProduct.name}" eliminado correctamente`);
+            setDeletingProduct(null);
+        }
+    };
+
+    // Handlers del carrito
+    const handleAddToCart = (product: Product) => {
+        if (product.stock === 0) {
+            error('Este producto está agotado');
+            return;
+        }
+        addToCart(product);
+        success(`"${product.name}" agregado al carrito`);
+    };
+
+    const handleClearCart = () => {
+        clearCart();
+        success('Carrito vaciado');
+    };
+
+    // Loading state
+    if (!isLoaded) {
+        return (
+            <main>
+                <div className="loading-screen">
+                    <div className="loading-spinner" />
+                    <p>Cargando tienda...</p>
+                </div>
+            </main>
+        );
+    }
 
     return (
-        <main>
-            <header style={{ marginBottom: '3rem', textAlign: 'center' }}>
-                <h1 style={{ fontSize: '2.5rem', color: 'var(--accent)' }}>TechStore Dashboard</h1>
-                <p style={{ color: 'var(--muted-foreground)' }}>Sincronización de Procesos en Paralelo</p>
-            </header>
+        <>
+            <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} />
 
-            <section style={{ marginBottom: '3rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                    <h2>Estado de los Procesos</h2>
-                    <button className="btn" onClick={handleStart} disabled={isProcessing}>
-                        {isProcessing ? 'Procesando...' : 'Iniciar Sincronización'}
-                    </button>
-                </div>
+            <main>
+                <ProductList
+                    products={products}
+                    searchTerm={searchTerm}
+                    onSearchChange={setSearchTerm}
+                    categoryFilter={categoryFilter}
+                    onCategoryChange={setCategoryFilter}
+                    availableCategories={availableCategories}
+                    onNewProduct={handleNewProduct}
+                    onEditProduct={handleEditProduct}
+                    onDeleteProduct={handleDeleteRequest}
+                    onAddToCart={handleAddToCart}
+                />
+            </main>
 
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1rem' }}>
-                    <ProcessIndicator
-                        label="1. Catálogo de Productos"
-                        loading={products.loading}
-                        error={products.error}
-                        success={!!products.data}
-                    />
-                    <ProcessIndicator
-                        label="2. Lista de Precios"
-                        loading={prices.loading}
-                        error={prices.error}
-                        success={!!prices.data}
-                    />
-                    <ProcessIndicator
-                        label="3. Inventario en Tiempo Real"
-                        loading={inventory.loading}
-                        error={inventory.error}
-                        success={!!inventory.data}
-                    />
-                </div>
-            </section>
+            {/* Modal: Crear/Editar producto */}
+            <Modal
+                isOpen={isFormModalOpen}
+                onClose={handleFormCancel}
+                title={editingProduct ? 'Editar producto' : 'Nuevo producto'}
+            >
+                <ProductForm
+                    product={editingProduct}
+                    onSubmit={handleFormSubmit}
+                    onCancel={handleFormCancel}
+                />
+            </Modal>
 
-            {allFinished && (
-                <section className="animate-fade-in">
-                    <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem' }}>
-                        <h2 style={{ marginBottom: '1.5rem' }}>Resultados Integrados</h2>
+            {/* Diálogo de confirmación: Eliminar */}
+            <ConfirmDialog
+                isOpen={!!deletingProduct}
+                onClose={() => setDeletingProduct(null)}
+                onConfirm={handleDeleteConfirm}
+                title="Eliminar producto"
+                message={`¿Estás seguro de que deseas eliminar "${deletingProduct?.name}"? Esta acción no se puede deshacer.`}
+            />
 
-                        {products.error ? (
-                            <div className="card" style={{ background: 'rgba(239, 68, 68, 0.05)', borderColor: 'var(--error)' }}>
-                                <p style={{ color: 'var(--error)' }}>
-                                    Error crítico: No se pudo cargar el catálogo de productos. La integración no es posible.
-                                </p>
-                            </div>
-                        ) : (
-                            <>
-                                {(prices.error || inventory.error) && (
-                                    <p style={{ color: 'var(--warning)', marginBottom: '1rem', fontSize: '0.9rem' }}>
-                                        ⚠️ Algunos datos secundarios no se pudieron sincronizar (Precios o Stock).
-                                    </p>
-                                )}
-                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem' }}>
-                                    {integratedData.map(product => (
-                                        <ProductCard key={product.id} product={product} />
-                                    ))}
-                                </div>
-                            </>
-                        )}
-                    </div>
-                </section>
-            )}
+            {/* Drawer del carrito */}
+            <CartDrawer
+                isOpen={isCartOpen}
+                onClose={() => setIsCartOpen(false)}
+                items={cartItems}
+                cartTotal={cartTotal}
+                onUpdateQuantity={updateQuantity}
+                onRemoveItem={removeFromCart}
+                onClearCart={handleClearCart}
+            />
 
-            {(!allFinished && !isProcessing) && (
-                <div style={{ textAlign: 'center', padding: '4rem', color: 'var(--muted-foreground)' }}>
-                    Presiona el botón para iniciar la carga sincronizada.
-                </div>
-            )}
-        </main>
+            {/* Toasts */}
+            <ToastContainer toasts={toasts} onRemove={removeToast} />
+        </>
     );
 }
