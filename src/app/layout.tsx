@@ -1,9 +1,8 @@
 import '../styles/globals.css';
-import { StoreProvider } from '../context/StoreContext';
 
 export const metadata = {
-    title: 'Tienda Electrónicos - Integración UI',
-    description: 'Demostración de flujos paralelos y sincronización UI',
+    title: 'TechStore - Tienda de Electrónicos',
+    description: 'Tu tienda de electrónicos con CRUD completo y carrito de compras.',
 };
 
 export default function RootLayout({
@@ -14,9 +13,7 @@ export default function RootLayout({
     return (
         <html lang="es">
             <body>
-                <StoreProvider>
-                    {children}
-                </StoreProvider>
+                {children}
             </body>
         </html>
     );
