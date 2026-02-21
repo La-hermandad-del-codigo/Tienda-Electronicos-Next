@@ -3,6 +3,7 @@
 import React from 'react';
 import { Product } from '../../types/product';
 import { EmptyState } from '../ui/EmptyState';
+import { useInfiniteScroll } from '../../hooks/useInfiniteScroll';
 
 interface ProductListProps {
     products: Product[];
@@ -29,6 +30,13 @@ export const ProductList: React.FC<ProductListProps> = ({
     onDeleteProduct,
     onAddToCart,
 }) => {
+    const {
+        displayedItems,
+        hasMore,
+        isLoadingMore,
+        observerTarget
+    } = useInfiniteScroll(products, { initialPageSize: 8, increment: 4 });
+
     return (
         <section className="product-list-section">
             {/* Toolbar: búsqueda + filtros + nuevo */}
@@ -92,7 +100,7 @@ export const ProductList: React.FC<ProductListProps> = ({
                 />
             ) : (
                 <div className="product-grid">
-                    {products.map(product => (
+                    {displayedItems.map(product => (
                         <div key={product.id} className="card product-card animate-fade-in">
                             <div
                                 className="product-card-image"
@@ -109,10 +117,10 @@ export const ProductList: React.FC<ProductListProps> = ({
                                         <span className="product-price">${product.price.toFixed(2)}</span>
                                         <span
                                             className={`badge ${product.stock === 0
-                                                    ? 'badge-danger'
-                                                    : product.stock <= 5
-                                                        ? 'badge-warning'
-                                                        : 'badge-success'
+                                                ? 'badge-danger'
+                                                : product.stock <= 5
+                                                    ? 'badge-warning'
+                                                    : 'badge-success'
                                                 }`}
                                         >
                                             {product.stock === 0
@@ -149,6 +157,24 @@ export const ProductList: React.FC<ProductListProps> = ({
                             </div>
                         </div>
                     ))}
+                </div>
+            )}
+
+            {/* Elemento observador para scroll infinito */}
+            {products.length > 0 && (
+                <div
+                    ref={observerTarget}
+                    className="infinite-scroll-trigger"
+                    style={{ height: '20px', margin: '20px 0', textAlign: 'center' }}
+                >
+                    {isLoadingMore && (
+                        <div className="loading-spinner-small" style={{ margin: '0 auto' }}>
+                            <span className="loading-text">Cargando más productos...</span>
+                        </div>
+                    )}
+                    {!hasMore && products.length > 8 && (
+                        <p className="end-message">Has llegado al final del catálogo</p>
+                    )}
                 </div>
             )}
         </section>
