@@ -29,3 +29,5 @@ Este proyecto es una demostración técnica de flujo paralelo y sincronización 
 - **Developer 1 (Core)**: Configuración y Layout.
 - **Developer 2 (Logic)**: Servicios y Sincronización.
 - **Developer 3 (UI/UX)**: Componentes y Estilos.
+
+###### prueba jj
