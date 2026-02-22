@@ -26,3 +26,13 @@ export const CATEGORIES = [
   'Tablets',
   'Gaming',
 ] as const;
+
+export type OrderStatus = 'pending' | 'created' | 'failed';
+
+export interface Order {
+  id: string;
+  items: CartItem[];
+  total: number;
+  createdAt: string;
+  status: OrderStatus;
+}
