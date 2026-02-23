@@ -40,6 +40,8 @@ export default function Home() {
         updateQuantity,
         clearCart,
         syncCartWithProducts,
+        checkout,
+        isCheckingOut,
     } = useCart();
 
     const { toasts, removeToast, success, error } = useToast();
@@ -114,6 +116,14 @@ export default function Home() {
         success('Carrito vaciado');
     };
 
+    const handleCheckout = async () => {
+        const result = await checkout();
+        if (result) {
+            success('¡Gracias por tu compra! Tu pedido ha sido procesado.');
+            setIsCartOpen(false);
+        }
+    };
+
     return (
         <>
             <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} />
@@ -168,6 +178,8 @@ export default function Home() {
                 onUpdateQuantity={updateQuantity}
                 onRemoveItem={removeFromCart}
                 onClearCart={handleClearCart}
+                onCheckout={handleCheckout}
+                isCheckingOut={isCheckingOut}
             />
 
             {/* Toasts */}

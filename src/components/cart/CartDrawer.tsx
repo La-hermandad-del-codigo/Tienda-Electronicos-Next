@@ -12,6 +12,8 @@ interface CartDrawerProps {
     onUpdateQuantity: (productId: string, quantity: number) => void;
     onRemoveItem: (productId: string) => void;
     onClearCart: () => void;
+    onCheckout: () => void;
+    isCheckingOut: boolean;
 }
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({
@@ -22,6 +24,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
     onUpdateQuantity,
     onRemoveItem,
     onClearCart,
+    onCheckout,
+    isCheckingOut,
 }) => {
     return (
         <>
@@ -94,8 +98,13 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                             <span>Total</span>
                             <span className="cart-total-amount">${cartTotal.toFixed(2)}</span>
                         </div>
-                        <button className="btn cart-checkout-btn" style={{ width: '100%' }}>
-                            Proceder al pago
+                        <button
+                            className="btn cart-checkout-btn"
+                            style={{ width: '100%' }}
+                            onClick={onCheckout}
+                            disabled={isCheckingOut}
+                        >
+                            {isCheckingOut ? 'Procesando...' : 'Proceder al pago'}
                         </button>
                         <button
                             className="btn btn-secondary"

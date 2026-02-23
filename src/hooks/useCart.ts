@@ -9,6 +9,7 @@ const STORAGE_KEY = 'techstore_cart';
 export function useCart() {
     const [items, setItems] = useState<CartItem[]>([]);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isCheckingOut, setIsCheckingOut] = useState(false);
 
     // Cargar carrito desde localStorage al montar
     useEffect(() => {
@@ -82,6 +83,19 @@ export function useCart() {
         });
     }, []);
 
+    const checkout = useCallback(async (): Promise<boolean> => {
+        if (items.length === 0) return false;
+
+        setIsCheckingOut(true);
+
+        // Simular llamada a API
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        clearCart();
+        setIsCheckingOut(false);
+        return true;
+    }, [items.length, clearCart]);
+
     const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
     const cartTotal = items.reduce(
         (sum, item) => sum + item.product.price * item.quantity,
@@ -91,11 +105,13 @@ export function useCart() {
     return {
         items,
         isLoaded,
+        isCheckingOut,
         addToCart,
         removeFromCart,
         updateQuantity,
         clearCart,
         syncCartWithProducts,
+        checkout,
         cartCount,
         cartTotal,
     };
