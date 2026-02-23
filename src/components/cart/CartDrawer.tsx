@@ -13,6 +13,8 @@ interface CartDrawerProps {
     onUpdateQuantity: (productId: string, quantity: number) => void;
     onRemoveItem: (productId: string) => void;
     onClearCart: () => void;
+    onCheckout: () => void;
+    isCheckingOut: boolean;
 }
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({
@@ -23,6 +25,8 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
     onUpdateQuantity,
     onRemoveItem,
     onClearCart,
+    onCheckout,
+    isCheckingOut,
 }) => {
     const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
     return (
@@ -105,9 +109,10 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                         <button
                             className="btn cart-checkout-btn"
                             style={{ width: '100%' }}
-                            onClick={() => setIsCheckoutOpen(true)}
+                            onClick={onCheckout}
+                            disabled={isCheckingOut}
                         >
-                            Proceder al pago
+                            {isCheckingOut ? 'Procesando...' : 'Proceder al pago'}
                         </button>
                         {/* CheckoutModal moved outside footer to avoid unmount when cart is cleared */}
                         <button

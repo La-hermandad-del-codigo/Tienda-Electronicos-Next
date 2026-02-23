@@ -19,6 +19,7 @@ export default function Home() {
     const {
         products,
         isLoaded,
+        taskStatuses,
         searchTerm,
         setSearchTerm,
         categoryFilter,
@@ -39,6 +40,8 @@ export default function Home() {
         updateQuantity,
         clearCart,
         syncCartWithProducts,
+        checkout,
+        isCheckingOut,
     } = useCart();
 
     const { toasts, removeToast, success, error } = useToast();
@@ -55,6 +58,7 @@ export default function Home() {
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
+    const [processDismissed, setProcessDismissed] = useState(false);
 
     // Handlers de productos
     const handleNewProduct = () => {
@@ -112,17 +116,13 @@ export default function Home() {
         success('Carrito vaciado');
     };
 
-    // Loading state
-    if (!isLoaded) {
-        return (
-            <main>
-                <div className="loading-screen">
-                    <div className="loading-spinner" />
-                    <p>Cargando tienda...</p>
-                </div>
-            </main>
-        );
-    }
+    const handleCheckout = async () => {
+        const result = await checkout();
+        if (result) {
+            success('¡Gracias por tu compra! Tu pedido ha sido procesado.');
+            setIsCartOpen(false);
+        }
+    };
 
     return (
         <>
@@ -131,6 +131,10 @@ export default function Home() {
             <main>
                 <ProductList
                     products={products}
+                    isLoaded={isLoaded}
+                    taskStatuses={taskStatuses}
+                    processDismissed={processDismissed}
+                    onProcessDismiss={() => setProcessDismissed(true)}
                     searchTerm={searchTerm}
                     onSearchChange={setSearchTerm}
                     categoryFilter={categoryFilter}
@@ -174,6 +178,8 @@ export default function Home() {
                 onUpdateQuantity={updateQuantity}
                 onRemoveItem={removeFromCart}
                 onClearCart={handleClearCart}
+                onCheckout={handleCheckout}
+                isCheckingOut={isCheckingOut}
             />
 
             {/* Toasts */}
