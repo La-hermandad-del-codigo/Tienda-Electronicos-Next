@@ -6,9 +6,10 @@ import { useAuth } from '../../contexts/AuthContext';
 interface HeaderProps {
     cartCount: number;
     onCartClick: () => void;
+    onAdminRegisterClick?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
+export const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick, onAdminRegisterClick }) => {
     const { user, profile, isLoading, signOut } = useAuth();
 
     const handleLogout = async () => {
@@ -38,9 +39,13 @@ export const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
                                     <a href="/orders" className="btn btn-sm btn-ghost header-orders-btn" title="Mis pedidos">
                                         📋 Mis pedidos
                                     </a>
-                                    <a href="/admin/register" className="btn btn-sm btn-ghost header-admin-btn" title="Registrar Admin">
+                                    <button
+                                        className="btn btn-sm btn-ghost header-admin-btn"
+                                        onClick={onAdminRegisterClick}
+                                        title="Registrar Admin"
+                                    >
                                         👤 Registrar Admin
-                                    </a>
+                                    </button>
                                     <button
                                         className="btn btn-sm btn-secondary"
                                         onClick={handleLogout}

@@ -84,13 +84,12 @@ export function useCheckout() {
 
     if (itemsError) throw new Error(itemsError.message);
 
-    // 3. Decrement stock for each purchased product
+    // 3. Decrement stock for each purchased product (via RPC to bypass RLS)
     for (const item of items) {
-      const newStock = Math.max(0, item.product.stock - item.quantity);
-      await supabase
-        .from('products')
-        .update({ stock: newStock })
-        .eq('id', item.product.id);
+      await supabase.rpc('decrement_stock', {
+        p_product_id: item.product.id,
+        p_quantity: item.quantity,
+      });
     }
 
     return {

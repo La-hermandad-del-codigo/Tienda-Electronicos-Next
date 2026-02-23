@@ -15,6 +15,7 @@ import { CartDrawer } from '../components/cart/CartDrawer';
 import { Modal } from '../components/ui/Modal';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { ToastContainer } from '../components/ui/Toast';
+import { AdminRegisterModal } from '../components/ui/AdminRegisterModal';
 
 export default function Home() {
     const router = useRouter();
@@ -64,6 +65,7 @@ export default function Home() {
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
     const [processDismissed, setProcessDismissed] = useState(false);
+    const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
 
     // Handlers de productos
     const handleNewProduct = () => {
@@ -150,7 +152,11 @@ export default function Home() {
 
     return (
         <>
-            <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} />
+            <Header
+                cartCount={cartCount}
+                onCartClick={() => setIsCartOpen(true)}
+                onAdminRegisterClick={() => setIsAdminModalOpen(true)}
+            />
 
             <main>
                 <ProductList
@@ -210,6 +216,14 @@ export default function Home() {
 
             {/* Toasts */}
             <ToastContainer toasts={toasts} onRemove={removeToast} />
+
+            {/* Modal: Registrar Admin */}
+            <AdminRegisterModal
+                isOpen={isAdminModalOpen}
+                onClose={() => setIsAdminModalOpen(false)}
+                onSuccess={(msg) => { success(msg); }}
+                onError={(msg) => { showError(msg); }}
+            />
         </>
     );
 }

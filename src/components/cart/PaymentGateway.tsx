@@ -33,10 +33,10 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({
     } = useCheckout();
 
     // Card form state
-    const [cardName, setCardName] = useState('');
-    const [cardNumber, setCardNumber] = useState('');
-    const [cardExpiry, setCardExpiry] = useState('');
-    const [cardCvv, setCardCvv] = useState('');
+    const [cardName, setCardName] = useState('Juan Pérez');
+    const [cardNumber, setCardNumber] = useState('4242 4242 4242 4242');
+    const [cardExpiry, setCardExpiry] = useState('12/28');
+    const [cardCvv, setCardCvv] = useState('123');
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
     const [showProcessing, setShowProcessing] = useState(false);
 
