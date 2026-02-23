@@ -781,6 +781,64 @@ h1, h2, h3, h4 {
   background: linear-gradient(135deg, var(--accent-hover), #7c3aed);
 }
 
+/* Checkout floating panel (fixed card on the right, does not push content) */
+.checkout-panel {
+  position: fixed;
+  top: 6vh;
+  right: 20px;
+  width: min(420px, 92%);
+  max-width: 420px;
+  max-height: 88vh;
+  background: var(--background);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  z-index: 170;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideInFromRight 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.checkout-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.checkout-body {
+  padding: 1rem 1.25rem;
+  overflow: auto;
+}
+
+.checkout-steps .step {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.order-summary {
+  background: var(--muted);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.checkout-panel .modal-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+@keyframes slideInFromRight {
+  from { transform: translateX(8px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
 /* ========================================
    Empty State
    ======================================== */
