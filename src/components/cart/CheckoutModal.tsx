@@ -3,6 +3,9 @@
 import React, { useEffect } from 'react';
 import { useCheckout } from '../../hooks/useCheckout';
 import { useCart } from '../../hooks/useCart';
+import { getFromStorage, saveToStorage } from '../../utils/localStorage';
+import { setCheckoutPanelVisible, registerCheckoutCloseHandler, clearCheckoutCloseHandler } from '../../utils/checkoutPanel';
+import type { Order } from '../../types/product';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -22,7 +25,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
     reset,
   } = useCheckout();
 
-  const { items, cartTotal } = useCart();
+  const { items, cartTotal, clearCart } = useCart();
   const [localOrder, setLocalOrder] = React.useState(orderResult ?? null);
 
   useEffect(() => {
@@ -30,6 +33,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
       // iniciar automáticamente al abrir: limpiar estado previo y lanzar checkout
       setLocalOrder(null);
       reset();
+      // señalar que el panel está visible y registrar el cierre programático
+      setCheckoutPanelVisible(true);
+      registerCheckoutCloseHandler(handleClose);
       startCheckout().catch(() => {
         // errores ya manejados en el hook
       });
@@ -51,11 +57,43 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
   }, [orderResult]);
 
   const handleClose = () => {
-    // Cuando el usuario cierre manualmente, resetear el hook de checkout y la copia local
+    // Asegurar que la orden local se guarde en el historial (sin duplicados),
+    // limpiar el carrito, resetear el estado de checkout y cerrar el modal.
+    const ORDERS_KEY = 'techstore_orders';
+    if (localOrder) {
+      try {
+        const existing = getFromStorage<Order[]>(ORDERS_KEY, []);
+        const already = existing.find(o => o.id === localOrder.id);
+        if (!already) {
+          saveToStorage(ORDERS_KEY, [localOrder, ...existing]);
+        }
+      } catch (e) {
+        // ignorar errores de storage
+      }
+    }
+
+    try {
+      clearCart();
+    } catch (e) {
+      // ignorar errores al limpiar carrito
+    }
+
     reset();
     setLocalOrder(null);
     onClose();
   };
+
+  // cuando el modal se desmonte o cambie a cerrado, marcar invisibilidad y limpiar handler
+  useEffect(() => {
+    if (!isOpen) {
+      setCheckoutPanelVisible(false);
+      clearCheckoutCloseHandler();
+    }
+    return () => {
+      setCheckoutPanelVisible(false);
+      clearCheckoutCloseHandler();
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

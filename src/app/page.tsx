@@ -14,6 +14,7 @@ import { CartDrawer } from '../components/cart/CartDrawer';
 import { Modal } from '../components/ui/Modal';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
 import { ToastContainer } from '../components/ui/Toast';
+import { isCheckoutPanelVisible, invokeCheckoutCloseHandler } from '../utils/checkoutPanel';
 
 export default function Home() {
     // Hooks de estado
@@ -61,7 +62,8 @@ export default function Home() {
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
-    const [processDismissed, setProcessDismissed] = useState(false);
+    const [pendingAddProduct, setPendingAddProduct] = useState<Product | null>(null);
+    const [showCancelCheckoutConfirm, setShowCancelCheckoutConfirm] = useState(false);
 
     // Handlers de productos
     const handleNewProduct = () => {
@@ -122,13 +124,20 @@ export default function Home() {
             showError('Este producto está agotado');
             return;
         }
+        // Si hay un proceso de pago abierto, preguntar al usuario si quiere
+        // cancelarlo para poder añadir el producto.
+        if (isCheckoutPanelVisible()) {
+            setPendingAddProduct(product);
+            setShowCancelCheckoutConfirm(true);
+            return;
+        }
+
         addToCart(product);
         success(`"${product.name}" agregado al carrito`);
     };
 
     const handleClearCart = () => {
         clearCart();
-        success('Carrito vaciado');
     };
 
     const handleCheckout = async () => {
@@ -183,6 +192,30 @@ export default function Home() {
                 onConfirm={handleDeleteConfirm}
                 title="Eliminar producto"
                 message={`¿Estás seguro de que deseas eliminar "${deletingProduct?.name}"? Esta acción no se puede deshacer.`}
+            />
+
+            {/* Diálogo: cancelar checkout para agregar producto */}
+            <ConfirmDialog
+                isOpen={showCancelCheckoutConfirm}
+                onClose={() => {
+                    setShowCancelCheckoutConfirm(false);
+                    setPendingAddProduct(null);
+                }}
+                onConfirm={() => {
+                    // cerrar el panel de checkout (esto limpiará estado y carrito según implementación)
+                    invokeCheckoutCloseHandler();
+                    // añadir el producto después de cerrar
+                    if (pendingAddProduct) {
+                        addToCart(pendingAddProduct);
+                        success(`"${pendingAddProduct.name}" agregado al carrito`);
+                    }
+                    setPendingAddProduct(null);
+                    setShowCancelCheckoutConfirm(false);
+                }}
+                title="Cancelar proceso de pago"
+                message={`¿Deseas cancelar el proceso de pago actual para agregar "${pendingAddProduct?.name}" al carrito?`}
+                confirmLabel="Sí, cancelar"
+                cancelLabel="No, continuar"
             />
 
             {/* Drawer del carrito */}

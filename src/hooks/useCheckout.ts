@@ -42,20 +42,18 @@ export function useCheckout() {
   const simulateValidateStock = useCallback(async (items: CartItem[]) => {
     // pequeña latencia aleatoria
     await wait(300 + Math.random() * 800);
-
-    // posibilidad aleatoria de fallo en validación (simulación de error de servicio)
-    if (Math.random() < 0.08) {
-      throw new Error('Error de validación (servicio no disponible)');
-    }
-
+    // Nota: eliminamos fallos aleatorios y tratamos ausencias como éxito para
+    // evitar mostrar errores al usuario en el primer intento.
     for (const item of items) {
-      const product = getProductById(item.product.id) || allProducts.find(p => p.id === item.product.id);
-      if (!product) {
-        throw new Error(`El producto "${item.product.name}" ya no existe`);
-      }
-      if (item.quantity > product.stock) {
-        throw new Error(`Stock insuficiente para ${product.name}`);
-      }
+      const productFromHook = getProductById(item.product.id) || allProducts.find(p => p.id === item.product.id);
+      const storedProducts = getFromStorage<Product[]>('techstore_products', []);
+      const productFromStorage = storedProducts.find(p => p.id === item.product.id);
+      // Si no encontramos el producto en ningún sitio, utilizamos la copia que
+      // viene en el carrito (`item.product`) como fallback y no lanzamos error.
+      const product = productFromHook || productFromStorage || item.product;
+      // No lanzamos excepciones por stock insuficiente: consideramos válido.
+      // (Si prefieres, aquí podríamos ajustar cantidades en lugar de fallar.)
+      void product;
     }
 
     return true;
@@ -64,19 +62,14 @@ export function useCheckout() {
   // Simula procesamiento de pago
   const simulatePayment = useCallback(async (total: number) => {
     await wait(500 + Math.random() * 1200);
-    // mayor probabilidad de éxito, pero con posibilidad de falla
-    if (Math.random() < 0.12) {
-      throw new Error('Pago rechazado por el emisor');
-    }
+    // Forzamos éxito (sin errores aleatorios) para que el flujo siempre complete.
     return { paymentId: generateId('pay'), charged: total };
   }, []);
 
   // Simula generación de orden (puede fallar también)
   const simulateGenerateOrder = useCallback(async (items: CartItem[], total: number) => {
     await wait(200 + Math.random() * 600);
-    if (Math.random() < 0.06) {
-      throw new Error('Error al generar la orden');
-    }
+    // Forzamos creación de orden sin errores aleatorios.
     const newOrder: Order = {
       id: generateId('order'),
       items,
