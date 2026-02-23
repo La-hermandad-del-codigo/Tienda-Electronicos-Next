@@ -15,7 +15,7 @@ const emptyForm: ProductFormData = {
     price: 0,
     stock: 0,
     category: CATEGORIES[0],
-    imageUrl: '',
+    image_url: '',
 };
 
 export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onCancel }) => {
@@ -30,7 +30,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
                 price: product.price,
                 stock: product.stock,
                 category: product.category,
-                imageUrl: product.imageUrl,
+                image_url: product.image_url,
             });
         } else {
             setFormData(emptyForm);
@@ -68,7 +68,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
                 ...formData,
                 name: formData.name.trim(),
                 description: formData.description.trim(),
-                imageUrl: formData.imageUrl.trim() || `https://picsum.photos/seed/${Date.now()}/400/300`,
+                image_url: formData.image_url.trim() || `https://picsum.photos/seed/${Date.now()}/400/300`,
             });
         }
     };
@@ -170,12 +170,12 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
             </div>
 
             <div className="form-group">
-                <label htmlFor="imageUrl">URL de imagen (opcional)</label>
+                <label htmlFor="image_url">URL de imagen (opcional)</label>
                 <input
-                    id="imageUrl"
-                    name="imageUrl"
+                    id="image_url"
+                    name="image_url"
                     type="url"
-                    value={formData.imageUrl}
+                    value={formData.image_url}
                     onChange={handleChange}
                     placeholder="https://ejemplo.com/imagen.jpg"
                 />

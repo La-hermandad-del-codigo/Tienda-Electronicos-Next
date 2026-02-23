@@ -54,7 +54,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                                 <div key={item.product.id} className="cart-item">
                                     <div
                                         className="cart-item-image"
-                                        style={{ backgroundImage: `url(${item.product.imageUrl})` }}
+                                        style={{ backgroundImage: `url(${item.product.image_url})` }}
                                     />
                                     <div className="cart-item-details">
                                         <h4 className="cart-item-name">{item.product.name}</h4>

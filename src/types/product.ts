@@ -5,8 +5,9 @@ export interface Product {
   price: number;
   stock: number;
   category: string;
-  imageUrl: string;
-  createdAt: string;
+  image_url: string;
+  created_at: string;
+  created_by?: string | null;
 }
 
 export interface CartItem {
@@ -14,7 +15,7 @@ export interface CartItem {
   quantity: number;
 }
 
-export type ProductFormData = Omit<Product, 'id' | 'createdAt'>;
+export type ProductFormData = Omit<Product, 'id' | 'created_at' | 'created_by'>;
 
 export const CATEGORIES = [
   'Laptops',
