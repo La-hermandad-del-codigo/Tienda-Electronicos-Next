@@ -64,6 +64,7 @@ export default function Home() {
     const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
     const [pendingAddProduct, setPendingAddProduct] = useState<Product | null>(null);
     const [showCancelCheckoutConfirm, setShowCancelCheckoutConfirm] = useState(false);
+    const [processDismissed, setProcessDismissed] = useState(false);
 
     // Handlers de productos
     const handleNewProduct = () => {
