@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { CheckoutModal } from './CheckoutModal';
+import { PaymentGateway } from './PaymentGateway';
 import { CartItem as CartItemType } from '../../types/product';
 import { EmptyState } from '../ui/EmptyState';
 
@@ -13,8 +13,9 @@ interface CartDrawerProps {
     onUpdateQuantity: (productId: string, quantity: number) => void;
     onRemoveItem: (productId: string) => void;
     onClearCart: () => void;
-    onCheckout?: () => void;
-    isCheckingOut?: boolean;
+    isAuthenticated: boolean;
+    onLoginRedirect: () => void;
+    onCheckoutSuccess: () => void;
 }
 
 export const CartDrawer: React.FC<CartDrawerProps> = ({
@@ -25,10 +26,27 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
     onUpdateQuantity,
     onRemoveItem,
     onClearCart,
-    onCheckout,
-    isCheckingOut = false,
+    isAuthenticated,
+    onLoginRedirect,
+    onCheckoutSuccess,
 }) => {
-    const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+    const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+
+    const handleCheckoutClick = () => {
+        if (!isAuthenticated) {
+            onLoginRedirect();
+            return;
+        }
+        setIsPaymentOpen(true);
+    };
+
+    const handlePaymentSuccess = () => {
+        onClearCart();
+        setIsPaymentOpen(false);
+        onCheckoutSuccess();
+        onClose();
+    };
+
     return (
         <>
             {/* Overlay */}
@@ -44,11 +62,13 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 </div>
 
                 <div className="cart-drawer-body">
-                    {isCheckoutOpen ? (
-                        <CheckoutModal
-                            isOpen={isCheckoutOpen}
-                            onClose={() => setIsCheckoutOpen(false)}
-                            onParentClear={onClearCart}
+                    {isPaymentOpen ? (
+                        <PaymentGateway
+                            isOpen={isPaymentOpen}
+                            onClose={() => setIsPaymentOpen(false)}
+                            items={items}
+                            cartTotal={cartTotal}
+                            onSuccess={handlePaymentSuccess}
                         />
                     ) : items.length === 0 ? (
                         <EmptyState
@@ -100,22 +120,25 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     )}
                 </div>
 
-                {items.length > 0 && (
+                {items.length > 0 && !isPaymentOpen && (
                     <div className="cart-drawer-footer">
                         <div className="cart-total">
                             <span>Total</span>
                             <span className="cart-total-amount">${cartTotal.toFixed(2)}</span>
                         </div>
+
+                        {!isAuthenticated && (
+                            <div className="cart-login-notice">
+                                <p>🔒 Inicia sesión para completar tu compra</p>
+                            </div>
+                        )}
+
                         <button
                             className="btn cart-checkout-btn"
                             style={{ width: '100%' }}
-                            onClick={() => {
-                                setIsCheckoutOpen(true);
-                                onCheckout?.();
-                            }}
-                            disabled={isCheckingOut}
+                            onClick={handleCheckoutClick}
                         >
-                            {isCheckingOut ? 'Procesando...' : 'Proceder al pago'}
+                            {isAuthenticated ? '💳 Proceder al pago' : '🔑 Iniciar sesión para comprar'}
                         </button>
                         <button
                             className="btn btn-secondary"

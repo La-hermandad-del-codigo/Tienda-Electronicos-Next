@@ -35,6 +35,12 @@ export const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
                                         {profile?.role === 'admin' && <span className="header-role-badge">Admin</span>}
                                         {user.email}
                                     </span>
+                                    <a href="/orders" className="btn btn-sm btn-ghost header-orders-btn" title="Mis pedidos">
+                                        📋 Mis pedidos
+                                    </a>
+                                    <a href="/admin/register" className="btn btn-sm btn-ghost header-admin-btn" title="Registrar Admin">
+                                        👤 Registrar Admin
+                                    </a>
                                     <button
                                         className="btn btn-sm btn-secondary"
                                         onClick={handleLogout}

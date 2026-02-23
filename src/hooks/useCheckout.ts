@@ -1,29 +1,27 @@
 "use client";
 
-import { useState, useCallback, useMemo } from 'react';
-import { CartItem, Order } from '../types/product';
-import { useProducts } from './useProducts';
-import { useCart } from './useCart';
-import { generateId } from '../utils/idGenerator';
-import { getFromStorage, saveToStorage } from '../utils/localStorage';
+import React, { useState, useCallback, useMemo } from 'react';
+import { CartItem } from '../types/product';
+import { supabase } from '../lib/supabase';
 
 type TaskState = 'idle' | 'loading' | 'success' | 'error';
-
-const ORDERS_KEY = 'techstore_orders';
 
 function wait(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-export function useCheckout() {
-  const { allProducts, getProductById } = useProducts();
-  const { items: cartItems, cartTotal, clearCart, isLoaded } = useCart();
+export interface CheckoutResult {
+  orderId: string;
+  total: number;
+  createdAt: string;
+}
 
+export function useCheckout() {
   const [validationState, setValidationState] = useState<TaskState>('idle');
   const [paymentState, setPaymentState] = useState<TaskState>('idle');
   const [orderState, setOrderState] = useState<TaskState>('idle');
 
-  const [orderResult, setOrderResult] = useState<Order | null>(null);
+  const [orderResult, setOrderResult] = useState<CheckoutResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const processing = useMemo(() => {
@@ -38,115 +36,114 @@ export function useCheckout() {
     setError(null);
   }, []);
 
-  // Simula validación de stock: comprueba cantidades contra productos actuales
-  const simulateValidateStock = useCallback(async (items: CartItem[]) => {
-    // pequeña latencia aleatoria
-    await wait(300 + Math.random() * 800);
-    // Nota: eliminamos fallos aleatorios y tratamos ausencias como éxito para
-    // evitar mostrar errores al usuario en el primer intento.
-    for (const item of items) {
-      const productFromHook = getProductById(item.product.id) || allProducts.find(p => p.id === item.product.id);
-      const storedProducts = getFromStorage<Product[]>('techstore_products', []);
-      const productFromStorage = storedProducts.find(p => p.id === item.product.id);
-      // Si no encontramos el producto en ningún sitio, utilizamos la copia que
-      // viene en el carrito (`item.product`) como fallback y no lanzamos error.
-      const product = productFromHook || productFromStorage || item.product;
-      // No lanzamos excepciones por stock insuficiente: consideramos válido.
-      // (Si prefieres, aquí podríamos ajustar cantidades en lugar de fallar.)
-      void product;
-    }
-
+  // Simula validación de stock
+  const simulateValidateStock = useCallback(async () => {
+    await wait(400 + Math.random() * 600);
     return true;
-  }, [allProducts, getProductById]);
+  }, []);
 
   // Simula procesamiento de pago
-  const simulatePayment = useCallback(async (total: number) => {
-    await wait(500 + Math.random() * 1200);
-    // Forzamos éxito (sin errores aleatorios) para que el flujo siempre complete.
-    return { paymentId: generateId('pay'), charged: total };
+  const simulatePayment = useCallback(async () => {
+    await wait(600 + Math.random() * 1000);
+    return true;
   }, []);
 
-  // Simula generación de orden (puede fallar también)
-  const simulateGenerateOrder = useCallback(async (items: CartItem[], total: number) => {
-    await wait(200 + Math.random() * 600);
-    // Forzamos creación de orden sin errores aleatorios.
-    const newOrder: Order = {
-      id: generateId('order'),
-      items,
-      total,
-      createdAt: new Date().toISOString(),
-      status: 'created',
+  // Guarda la orden en Supabase
+  const saveOrderToSupabase = useCallback(async (
+    userId: string,
+    items: CartItem[],
+    total: number,
+    paymentMethod: string = 'card_simulated'
+  ): Promise<CheckoutResult> => {
+    // 1. Insert order
+    const { data: orderData, error: orderError } = await supabase
+      .from('orders')
+      .insert({
+        user_id: userId,
+        total,
+        status: 'completed',
+        payment_method: paymentMethod,
+      })
+      .select()
+      .single();
+
+    if (orderError) throw new Error(orderError.message);
+
+    // 2. Insert order items
+    const orderItems = items.map(item => ({
+      order_id: orderData.id,
+      product_id: item.product.id,
+      product_name: item.product.name,
+      product_price: item.product.price,
+      quantity: item.quantity,
+    }));
+
+    const { error: itemsError } = await supabase
+      .from('order_items')
+      .insert(orderItems);
+
+    if (itemsError) throw new Error(itemsError.message);
+
+    // 3. Decrement stock for each purchased product
+    for (const item of items) {
+      const newStock = Math.max(0, item.product.stock - item.quantity);
+      await supabase
+        .from('products')
+        .update({ stock: newStock })
+        .eq('id', item.product.id);
+    }
+
+    return {
+      orderId: orderData.id,
+      total: Number(orderData.total),
+      createdAt: orderData.created_at,
     };
-    return newOrder;
   }, []);
 
-  const startCheckout = useCallback(async () => {
+  const startCheckout = useCallback(async (
+    userId: string,
+    items: CartItem[],
+    total: number,
+    paymentMethod: string = 'card_simulated'
+  ) => {
     setError(null);
     setOrderResult(null);
 
-    let items = cartItems;
-    let total = cartTotal;
-
-    // Asegurarnos de no usar `cartTotal` antes de que `useCart` haya cargado desde localStorage.
-    // Si aún no está cargado, leer desde storage como fallback para obtener el total correcto.
-    if (!isLoaded) {
-      const stored = getFromStorage<CartItem[]>('techstore_cart', []);
-      items = stored;
-      total = stored.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-    }
-
+    // Step 1: Validate stock
     setValidationState('loading');
+    try {
+      await simulateValidateStock();
+      setValidationState('success');
+    } catch (err) {
+      setValidationState('error');
+      setError(err instanceof Error ? err.message : 'Error al validar stock');
+      return null;
+    }
+
+    // Step 2: Process payment
     setPaymentState('loading');
+    try {
+      await simulatePayment();
+      setPaymentState('success');
+    } catch (err) {
+      setPaymentState('error');
+      setError(err instanceof Error ? err.message : 'Error al procesar pago');
+      return null;
+    }
+
+    // Step 3: Create order in Supabase
     setOrderState('loading');
-
-    // Iniciar las tres tareas en paralelo y actualizar sus estados independientemente
-    const validationPromise = simulateValidateStock(items)
-      .then(() => setValidationState('success'))
-      .catch(err => {
-        setValidationState('error');
-        setError(String(err.message || err));
-        throw err;
-      });
-
-    const paymentPromise = simulatePayment(total)
-      .then(() => setPaymentState('success'))
-      .catch(err => {
-        setPaymentState('error');
-        setError(String(err.message || err));
-        throw err;
-      });
-
-    let generatedOrder: Order | null = null;
-    const orderPromise = simulateGenerateOrder(items, total)
-      .then(order => {
-        generatedOrder = order;
-        setOrderState('success');
-        return order;
-      })
-      .catch(err => {
-        setOrderState('error');
-        setError(String(err.message || err));
-        throw err;
-      });
-
-    // Esperar a que todas terminen (settled) y luego decidir
-    const results = await Promise.allSettled([validationPromise, paymentPromise, orderPromise]);
-
-    const anyRejected = results.some(r => r.status === 'rejected');
-    if (anyRejected) {
-      // Ya se establecieron estados individuales y error, mantener orderResult null
-      return;
+    try {
+      const result = await saveOrderToSupabase(userId, items, total, paymentMethod);
+      setOrderState('success');
+      setOrderResult(result);
+      return result;
+    } catch (err) {
+      setOrderState('error');
+      setError(err instanceof Error ? err.message : 'Error al crear orden');
+      return null;
     }
-
-    // Todas las tareas exitosas: persistir orden y vaciar carrito
-    if (generatedOrder) {
-      const existing = getFromStorage<Order[]>(ORDERS_KEY, []);
-      saveToStorage(ORDERS_KEY, [generatedOrder, ...existing]);
-      setOrderResult(generatedOrder);
-      // vaciar carrito
-      clearCart();
-    }
-  }, [cartItems, cartTotal, clearCart, simulateGenerateOrder, simulatePayment, simulateValidateStock]);
+  }, [simulateValidateStock, simulatePayment, saveOrderToSupabase]);
 
   return {
     startCheckout,
