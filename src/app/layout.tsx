@@ -1,9 +1,7 @@
-import '../styles/globals.css';
+'use client';
 
-export const metadata = {
-    title: 'TechStore - Tienda de Electrónicos',
-    description: 'Tu tienda de electrónicos con CRUD completo y carrito de compras.',
-};
+import '../styles/globals.css';
+import { AuthProvider } from '../contexts/AuthContext';
 
 export default function RootLayout({
     children,
@@ -12,8 +10,14 @@ export default function RootLayout({
 }) {
     return (
         <html lang="es">
+            <head>
+                <title>TechStore - Tienda de Electrónicos</title>
+                <meta name="description" content="Tu tienda de electrónicos con CRUD completo y carrito de compras." />
+            </head>
             <body>
-                {children}
+                <AuthProvider>
+                    {children}
+                </AuthProvider>
             </body>
         </html>
     );

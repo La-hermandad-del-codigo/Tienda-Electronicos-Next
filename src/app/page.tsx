@@ -6,6 +6,7 @@ import { ProductFormData } from '../types/product';
 import { useProducts } from '../hooks/useProducts';
 import { useCart } from '../hooks/useCart';
 import { useToast } from '../hooks/useToast';
+import { useAuth } from '../contexts/AuthContext';
 import { Header } from '../components/layout/Header';
 import { ProductList } from '../components/products/ProductList';
 import { ProductForm } from '../components/products/ProductForm';
@@ -20,6 +21,7 @@ export default function Home() {
     const {
         products,
         isLoaded,
+        taskStatuses,
         searchTerm,
         setSearchTerm,
         categoryFilter,
@@ -29,6 +31,7 @@ export default function Home() {
         updateProduct,
         deleteProduct,
         allProducts,
+        error: productError,
     } = useProducts();
 
     const {
@@ -40,9 +43,12 @@ export default function Home() {
         updateQuantity,
         clearCart,
         syncCartWithProducts,
+        checkout,
+        isCheckingOut,
     } = useCart();
 
-    const { toasts, removeToast, success, error } = useToast();
+    const { toasts, removeToast, success, error: showError } = useToast();
+    const { isAdmin, user } = useAuth();
 
     // Sincronizar carrito cuando cambian los productos (edición/eliminación)
     React.useEffect(() => {
@@ -70,13 +76,21 @@ export default function Home() {
         setIsFormModalOpen(true);
     };
 
-    const handleFormSubmit = (formData: ProductFormData) => {
+    const handleFormSubmit = async (formData: ProductFormData) => {
         if (editingProduct) {
-            updateProduct(editingProduct.id, formData);
-            success(`"${formData.name}" actualizado correctamente`);
+            const ok = await updateProduct(editingProduct.id, formData);
+            if (ok) {
+                success(`"${formData.name}" actualizado correctamente`);
+            } else {
+                showError(productError || 'Error al actualizar el producto');
+            }
         } else {
-            addProduct(formData);
-            success(`"${formData.name}" creado correctamente`);
+            const newProduct = await addProduct(formData, user?.id);
+            if (newProduct) {
+                success(`"${formData.name}" creado correctamente`);
+            } else {
+                showError(productError || 'Error al crear el producto');
+            }
         }
         setIsFormModalOpen(false);
         setEditingProduct(null);
@@ -91,11 +105,15 @@ export default function Home() {
         setDeletingProduct(product);
     };
 
-    const handleDeleteConfirm = () => {
+    const handleDeleteConfirm = async () => {
         if (deletingProduct) {
-            deleteProduct(deletingProduct.id);
-            removeFromCart(deletingProduct.id);
-            success(`"${deletingProduct.name}" eliminado correctamente`);
+            const ok = await deleteProduct(deletingProduct.id);
+            if (ok) {
+                removeFromCart(deletingProduct.id);
+                success(`"${deletingProduct.name}" eliminado correctamente`);
+            } else {
+                showError(productError || 'Error al eliminar el producto');
+            }
             setDeletingProduct(null);
         }
     };
@@ -103,7 +121,7 @@ export default function Home() {
     // Handlers del carrito
     const handleAddToCart = (product: Product) => {
         if (product.stock === 0) {
-            error('Este producto está agotado');
+            showError('Este producto está agotado');
             return;
         }
         // Si hay un proceso de pago abierto, preguntar al usuario si quiere
@@ -122,17 +140,13 @@ export default function Home() {
         clearCart();
     };
 
-    // Loading state
-    if (!isLoaded) {
-        return (
-            <main>
-                <div className="loading-screen">
-                    <div className="loading-spinner" />
-                    <p>Cargando tienda...</p>
-                </div>
-            </main>
-        );
-    }
+    const handleCheckout = async () => {
+        const result = await checkout();
+        if (result) {
+            success('¡Gracias por tu compra! Tu pedido ha sido procesado.');
+            setIsCartOpen(false);
+        }
+    };
 
     return (
         <>
@@ -141,6 +155,10 @@ export default function Home() {
             <main>
                 <ProductList
                     products={products}
+                    isLoaded={isLoaded}
+                    taskStatuses={taskStatuses}
+                    processDismissed={processDismissed}
+                    onProcessDismiss={() => setProcessDismissed(true)}
                     searchTerm={searchTerm}
                     onSearchChange={setSearchTerm}
                     categoryFilter={categoryFilter}
@@ -150,6 +168,7 @@ export default function Home() {
                     onEditProduct={handleEditProduct}
                     onDeleteProduct={handleDeleteRequest}
                     onAddToCart={handleAddToCart}
+                    isAdmin={isAdmin}
                 />
             </main>
 
@@ -208,6 +227,8 @@ export default function Home() {
                 onUpdateQuantity={updateQuantity}
                 onRemoveItem={removeFromCart}
                 onClearCart={handleClearCart}
+                onCheckout={handleCheckout}
+                isCheckingOut={isCheckingOut}
             />
 
             {/* Toasts */}

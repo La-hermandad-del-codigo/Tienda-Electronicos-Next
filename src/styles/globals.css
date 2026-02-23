@@ -46,7 +46,9 @@
 }
 
 /* --- Reset & Base --- */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   padding: 0;
   margin: 0;
@@ -68,7 +70,10 @@ main {
   padding: 2rem 1.5rem 4rem;
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-weight: 700;
   letter-spacing: -0.025em;
   line-height: 1.2;
@@ -160,6 +165,53 @@ h1, h2, h3, h4 {
   padding: 0 4px;
   line-height: 1;
   animation: popIn 0.3s ease;
+}
+
+/* Header Auth Elements */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.header-user-email {
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.header-role-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .header-user-email {
+    display: none;
+  }
+
+  .header-role-badge {
+    display: none;
+  }
 }
 
 /* ========================================
@@ -952,29 +1004,274 @@ h1, h2, h3, h4 {
    Animations
    ======================================== */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateX(20px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes popIn {
-  from { transform: scale(0); }
-  50% { transform: scale(1.2); }
-  to { transform: scale(1); }
+  from {
+    transform: scale(0);
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  to {
+    transform: scale(1);
+  }
 }
 
 @keyframes fadeOverlay {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
+
+/* ========================================
+   Spin utility (inline rotating icon)
+   ======================================== */
+.spin {
+  display: inline-block;
+  animation: spin 0.7s linear infinite;
+}
+
+/* ========================================
+   Process Indicator
+   ======================================== */
+.process-indicator {
+  background: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.pi-has-error {
+  border-color: var(--error);
+  background: var(--error-bg);
+}
+
+.pi-done {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+
+.pi-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.pi-header-icon {
+  font-size: 1rem;
+}
+
+.pi-header-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  flex: 1;
+  color: var(--foreground);
+}
+
+.pi-dismiss {
+  background: none;
+  border: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  transition: all var(--transition);
+  line-height: 1;
+}
+
+.pi-dismiss:hover {
+  background: var(--border);
+  color: var(--foreground);
+}
+
+.pi-task-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pi-task {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  transition: background var(--transition);
+}
+
+.pi-task--idle {
+  color: var(--muted-foreground);
+}
+
+.pi-task--loading {
+  background: var(--accent-light);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.pi-task--success {
+  color: var(--success);
+}
+
+.pi-task--error {
+  color: var(--error);
+}
+
+.pi-task-icon {
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.pi-task-label {
+  flex: 1;
+}
+
+.pi-task-detail {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
+}
+
+/* ========================================
+   Skeleton Loading
+   ======================================== */
+@keyframes shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+
+  100% {
+    background-position: 400px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg,
+      var(--border) 25%,
+      var(--muted-foreground) 37%,
+      var(--border) 63%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: 4px;
+}
+
+.skeleton-image {
+  width: 100%;
+  height: 180px;
+  border-radius: 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.skeleton-title {
+  height: 18px;
+  width: 65%;
+}
+
+.skeleton-badge {
+  height: 18px;
+  width: 60px;
+  border-radius: 20px;
+}
+
+.skeleton-text {
+  height: 13px;
+  width: 100%;
+}
+
+.skeleton-text--short {
+  width: 70%;
+}
+
+.skeleton-price {
+  height: 20px;
+  width: 70px;
+}
+
+.skeleton-stock {
+  height: 18px;
+  width: 80px;
+  border-radius: 20px;
+}
+
+.skeleton-btn-sm {
+  height: 30px;
+  width: 34px;
+  border-radius: 6px;
+}
+
+.skeleton-btn {
+  height: 30px;
+  width: 80px;
+  border-radius: 6px;
+}
+
+.skeleton-card .product-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+}
+
+.skeleton-card .product-card-footer {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.skeleton-card .product-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
 
 .animate-fade-in {
   animation: fadeIn 0.4s ease-out forwards;

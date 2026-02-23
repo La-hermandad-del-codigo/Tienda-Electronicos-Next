@@ -2,68 +2,150 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Product, ProductFormData } from '../types/product';
-import { getFromStorage, saveToStorage } from '../utils/localStorage';
-import { defaultProducts } from '../data/defaultProducts';
-import { generateId } from '../utils/idGenerator';
+import { ProcessTask, ProcessStatus } from '../components/ui/ProcessIndicator';
+import { supabase } from '../lib/supabase';
 
-const STORAGE_KEY = 'techstore_products';
+function makeTask(id: string, label: string, status: ProcessStatus = 'idle'): ProcessTask {
+    return { id, label, status };
+}
 
 export function useProducts() {
     const [products, setProducts] = useState<Product[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [categoryFilter, setCategoryFilter] = useState('');
     const [isLoaded, setIsLoaded] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    // Cargar productos desde localStorage al montar
-    useEffect(() => {
-        const stored = getFromStorage<Product[]>(STORAGE_KEY, []);
-        if (stored.length === 0) {
-            // Primera vez: cargar catálogo por defecto
-            saveToStorage(STORAGE_KEY, defaultProducts);
-            setProducts(defaultProducts);
-        } else {
-            setProducts(stored);
-        }
-        setIsLoaded(true);
+    // Estados de tareas intermedias para el ProcessIndicator
+    const [taskStatuses, setTaskStatuses] = useState<ProcessTask[]>([
+        makeTask('connect-db', 'Conectando con Supabase', 'idle'),
+        makeTask('fetch-products', 'Obteniendo productos', 'idle'),
+        makeTask('sync-catalog', 'Sincronizando catálogo', 'idle'),
+    ]);
+
+    const updateTask = useCallback((id: string, status: ProcessStatus, detail?: string) => {
+        setTaskStatuses(prev =>
+            prev.map(t => t.id === id ? { ...t, status, detail } : t)
+        );
     }, []);
 
-    const addProduct = useCallback((formData: ProductFormData): Product => {
-        const newProduct: Product = {
-            ...formData,
-            id: generateId('prod'),
-            createdAt: new Date().toISOString(),
-        };
-        setProducts((prev: Product[]) => {
-            const updated = [newProduct, ...prev];
-            saveToStorage(STORAGE_KEY, updated);
-            return updated;
-        });
+    // Fetch products from Supabase
+    const fetchProducts = useCallback(async () => {
+        updateTask('connect-db', 'loading');
+
+        try {
+            // Step 1: connect
+            updateTask('connect-db', 'success', 'Conexión establecida');
+
+            // Step 2: fetch
+            updateTask('fetch-products', 'loading');
+            const { data, error: fetchError } = await supabase
+                .from('products')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (fetchError) {
+                updateTask('fetch-products', 'error', fetchError.message);
+                setError(fetchError.message);
+                return;
+            }
+
+            updateTask('fetch-products', 'success', `${data.length} producto(s) encontrado(s)`);
+
+            // Step 3: sync
+            updateTask('sync-catalog', 'loading');
+            setProducts(data as Product[]);
+            updateTask('sync-catalog', 'success', 'Catálogo sincronizado');
+            setError(null);
+        } catch (err) {
+            const message = err instanceof Error ? err.message : 'Error desconocido';
+            updateTask('sync-catalog', 'error', message);
+            setError(message);
+        } finally {
+            setIsLoaded(true);
+        }
+    }, [updateTask]);
+
+    // Initial load
+    useEffect(() => {
+        fetchProducts();
+    }, [fetchProducts]);
+
+    // Add product (admin only — enforced by RLS)
+    const addProduct = useCallback(async (formData: ProductFormData, userId?: string): Promise<Product | null> => {
+        const { data, error: insertError } = await supabase
+            .from('products')
+            .insert({
+                name: formData.name,
+                description: formData.description,
+                price: formData.price,
+                stock: formData.stock,
+                category: formData.category,
+                image_url: formData.image_url,
+                created_by: userId || null,
+            })
+            .select()
+            .single();
+
+        if (insertError) {
+            setError(insertError.message);
+            return null;
+        }
+
+        const newProduct = data as Product;
+        setProducts(prev => [newProduct, ...prev]);
+        setError(null);
         return newProduct;
     }, []);
 
-    const updateProduct = useCallback((id: string, formData: ProductFormData): void => {
-        setProducts((prev: Product[]) => {
-            const updated = prev.map(p =>
-                p.id === id ? { ...p, ...formData } : p
-            );
-            saveToStorage(STORAGE_KEY, updated);
-            return updated;
-        });
+    // Update product (admin only — enforced by RLS)
+    const updateProduct = useCallback(async (id: string, formData: ProductFormData): Promise<boolean> => {
+        const { error: updateError } = await supabase
+            .from('products')
+            .update({
+                name: formData.name,
+                description: formData.description,
+                price: formData.price,
+                stock: formData.stock,
+                category: formData.category,
+                image_url: formData.image_url,
+            })
+            .eq('id', id);
+
+        if (updateError) {
+            setError(updateError.message);
+            return false;
+        }
+
+        setProducts(prev =>
+            prev.map(p => p.id === id ? { ...p, ...formData } : p)
+        );
+        setError(null);
+        return true;
     }, []);
 
-    const deleteProduct = useCallback((id: string): void => {
-        setProducts((prev: Product[]) => {
-            const updated = prev.filter(p => p.id !== id);
-            saveToStorage(STORAGE_KEY, updated);
-            return updated;
-        });
+    // Delete product (admin only — enforced by RLS)
+    const deleteProduct = useCallback(async (id: string): Promise<boolean> => {
+        const { error: deleteError } = await supabase
+            .from('products')
+            .delete()
+            .eq('id', id);
+
+        if (deleteError) {
+            setError(deleteError.message);
+            return false;
+        }
+
+        setProducts(prev => prev.filter(p => p.id !== id));
+        setError(null);
+        return true;
     }, []);
 
     const getProductById = useCallback((id: string): Product | undefined => {
         return products.find(p => p.id === id);
     }, [products]);
 
-    // Filtrado
+    // Filtering (client-side for instant UX)
     const filteredProducts = products.filter(product => {
         const matchesSearch =
             searchTerm === '' ||
@@ -74,7 +156,6 @@ export function useProducts() {
         return matchesSearch && matchesCategory;
     });
 
-    // Categorías únicas de los productos existentes
     const availableCategories = products
         .map(p => p.category)
         .filter((cat, index, self) => self.indexOf(cat) === index)
@@ -84,6 +165,8 @@ export function useProducts() {
         products: filteredProducts,
         allProducts: products,
         isLoaded,
+        error,
+        taskStatuses,
         searchTerm,
         setSearchTerm,
         categoryFilter,
@@ -93,5 +176,6 @@ export function useProducts() {
         updateProduct,
         deleteProduct,
         getProductById,
+        refetch: fetchProducts,
     };
 }
