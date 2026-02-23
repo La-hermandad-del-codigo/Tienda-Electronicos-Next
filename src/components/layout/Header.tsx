@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface HeaderProps {
     cartCount: number;
@@ -8,6 +9,12 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
+    const { user, profile, isLoading, signOut } = useAuth();
+
+    const handleLogout = async () => {
+        await signOut();
+    };
+
     return (
         <header className="store-header">
             <div className="header-content">
@@ -18,10 +25,36 @@ export const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
                         <p className="header-subtitle">Tu tienda de electrónicos</p>
                     </div>
                 </div>
-                <button className="cart-button" onClick={onCartClick} aria-label="Abrir carrito">
-                    <span className="cart-button-icon">🛒</span>
-                    {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
-                </button>
+
+                <div className="header-actions">
+                    {!isLoading && (
+                        <>
+                            {user ? (
+                                <div className="header-user">
+                                    <span className="header-user-email" title={profile?.email ?? user.email ?? ''}>
+                                        {profile?.role === 'admin' && <span className="header-role-badge">Admin</span>}
+                                        {user.email}
+                                    </span>
+                                    <button
+                                        className="btn btn-sm btn-secondary"
+                                        onClick={handleLogout}
+                                    >
+                                        Cerrar sesión
+                                    </button>
+                                </div>
+                            ) : (
+                                <a href="/login" className="btn btn-sm">
+                                    Iniciar sesión
+                                </a>
+                            )}
+                        </>
+                    )}
+
+                    <button className="cart-button" onClick={onCartClick} aria-label="Abrir carrito">
+                        <span className="cart-button-icon">🛒</span>
+                        {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+                    </button>
+                </div>
             </div>
         </header>
     );

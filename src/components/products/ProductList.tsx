@@ -23,6 +23,7 @@ interface ProductListProps {
     onEditProduct: (product: Product) => void;
     onDeleteProduct: (product: Product) => void;
     onAddToCart: (product: Product) => void;
+    isAdmin?: boolean;
 }
 
 export const ProductList: React.FC<ProductListProps> = ({
@@ -40,6 +41,7 @@ export const ProductList: React.FC<ProductListProps> = ({
     onEditProduct,
     onDeleteProduct,
     onAddToCart,
+    isAdmin = false,
 }) => {
     const {
         displayedItems,
@@ -98,9 +100,11 @@ export const ProductList: React.FC<ProductListProps> = ({
                     </select>
                 </div>
 
-                <button className="btn" onClick={onNewProduct} disabled={!isLoaded}>
-                    + Nuevo producto
-                </button>
+                {isAdmin && (
+                    <button className="btn" onClick={onNewProduct} disabled={!isLoaded}>
+                        + Nuevo producto
+                    </button>
+                )}
             </div>
 
             {/* Skeleton mientras carga */}
@@ -131,7 +135,7 @@ export const ProductList: React.FC<ProductListProps> = ({
                             <div key={product.id} className="card product-card animate-fade-in">
                                 <div
                                     className="product-card-image"
-                                    style={{ backgroundImage: `url(${product.imageUrl})` }}
+                                    style={{ backgroundImage: `url(${product.image_url})` }}
                                 />
                                 <div className="product-card-body">
                                     <div className="product-card-header">
@@ -156,22 +160,26 @@ export const ProductList: React.FC<ProductListProps> = ({
                                             </span>
                                         </div>
                                         <div className="product-card-actions">
-                                            <button
-                                                className="btn-icon"
-                                                onClick={() => onEditProduct(product)}
-                                                title="Editar"
-                                                aria-label="Editar producto"
-                                            >
-                                                ✏️
-                                            </button>
-                                            <button
-                                                className="btn-icon btn-icon-danger"
-                                                onClick={() => onDeleteProduct(product)}
-                                                title="Eliminar"
-                                                aria-label="Eliminar producto"
-                                            >
-                                                🗑️
-                                            </button>
+                                            {isAdmin && (
+                                                <>
+                                                    <button
+                                                        className="btn-icon"
+                                                        onClick={() => onEditProduct(product)}
+                                                        title="Editar"
+                                                        aria-label="Editar producto"
+                                                    >
+                                                        ✏️
+                                                    </button>
+                                                    <button
+                                                        className="btn-icon btn-icon-danger"
+                                                        onClick={() => onDeleteProduct(product)}
+                                                        title="Eliminar"
+                                                        aria-label="Eliminar producto"
+                                                    >
+                                                        🗑️
+                                                    </button>
+                                                </>
+                                            )}
                                             <button
                                                 className="btn btn-sm"
                                                 onClick={() => onAddToCart(product)}
