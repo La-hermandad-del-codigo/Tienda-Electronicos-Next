@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React, { useState } from 'react';
+import { CheckoutModal } from './CheckoutModal';
 import { CartItem as CartItemType } from '../../types/product';
 import { EmptyState } from '../ui/EmptyState';
 
@@ -27,6 +28,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
     onCheckout,
     isCheckingOut,
 }) => {
+    const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
     return (
         <>
             {/* Overlay */}
@@ -42,7 +44,13 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 </div>
 
                 <div className="cart-drawer-body">
-                    {items.length === 0 ? (
+                    {isCheckoutOpen ? (
+                        <CheckoutModal
+                            isOpen={isCheckoutOpen}
+                            onClose={() => setIsCheckoutOpen(false)}
+                            onParentClear={onClearCart}
+                        />
+                    ) : items.length === 0 ? (
                         <EmptyState
                             icon="🛒"
                             title="Carrito vacío"
@@ -106,6 +114,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                         >
                             {isCheckingOut ? 'Procesando...' : 'Proceder al pago'}
                         </button>
+                        {/* CheckoutModal moved outside footer to avoid unmount when cart is cleared */}
                         <button
                             className="btn btn-secondary"
                             style={{ width: '100%', marginTop: '0.5rem' }}
@@ -116,6 +125,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     </div>
                 )}
             </aside>
+            
         </>
     );
 };
