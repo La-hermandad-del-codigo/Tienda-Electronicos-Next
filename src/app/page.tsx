@@ -109,7 +109,6 @@ export default function Home() {
 
     const handleClearCart = () => {
         clearCart();
-        success('Carrito vaciado');
     };
 
     // Loading state
