@@ -1,10 +1,7 @@
-import '../styles/globals.css';
-import { StoreProvider } from '../context/StoreContext';
+'use client';
 
-export const metadata = {
-    title: 'Tienda Electrónicos - Integración UI',
-    description: 'Demostración de flujos paralelos y sincronización UI',
-};
+import '../styles/globals.css';
+import { AuthProvider } from '../contexts/AuthContext';
 
 export default function RootLayout({
     children,
@@ -13,10 +10,14 @@ export default function RootLayout({
 }) {
     return (
         <html lang="es">
+            <head>
+                <title>TechStore - Tienda de Electrónicos</title>
+                <meta name="description" content="Tu tienda de electrónicos con CRUD completo y carrito de compras." />
+            </head>
             <body>
-                <StoreProvider>
+                <AuthProvider>
                     {children}
-                </StoreProvider>
+                </AuthProvider>
             </body>
         </html>
     );
