@@ -19,6 +19,7 @@ export default function AdminRegisterPage() {
     const [successMessage, setSuccessMessage] = useState('');
     const [submitting, setSubmitting] = useState(false);
 
+
     // Redirect if already authenticated
     useEffect(() => {
         if (!isLoading && user) {
@@ -64,9 +65,6 @@ export default function AdminRegisterPage() {
             if (error) {
                 setServerError(translateError(error.message));
             } else {
-                // Try to promote to admin after sign up
-                // Need to wait for the user to be created in profiles
-                // We'll use a small delay and then call the RPC
                 setTimeout(async () => {
                     try {
                         const { data: { user: newUser } } = await supabase.auth.getUser();
@@ -94,6 +92,8 @@ export default function AdminRegisterPage() {
             setSubmitting(false);
         }
     };
+
+
 
     const translateError = (msg: string): string => {
         if (msg.includes('Invalid login credentials')) return 'Correo o contraseña incorrectos.';
@@ -146,6 +146,8 @@ export default function AdminRegisterPage() {
                             <span>{successMessage}</span>
                         </div>
                     )}
+
+
 
                     <form className="login-form" onSubmit={handleSubmit} noValidate>
                         <div className="login-field">
