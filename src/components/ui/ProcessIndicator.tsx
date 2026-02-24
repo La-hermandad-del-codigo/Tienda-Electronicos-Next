@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Hourglass, Loader2, CheckCircle, XCircle, AlertTriangle, Settings, X } from 'lucide-react';
 
 export type ProcessStatus = 'idle' | 'loading' | 'success' | 'error';
 
@@ -16,11 +17,11 @@ interface ProcessIndicatorProps {
     onDismiss?: () => void;
 }
 
-const statusIcon: Record<ProcessStatus, string> = {
-    idle: '⏳',
-    loading: '🔄',
-    success: '✅',
-    error: '❌',
+const statusIcon: Record<ProcessStatus, React.ReactNode> = {
+    idle: <Hourglass size={16} />,
+    loading: <Loader2 size={16} className="spin" />,
+    success: <CheckCircle size={16} />,
+    error: <XCircle size={16} />,
 };
 
 const statusClass: Record<ProcessStatus, string> = {
@@ -38,8 +39,8 @@ export const ProcessIndicator: React.FC<ProcessIndicatorProps> = ({ tasks, onDis
     return (
         <div className={`process-indicator ${hasError ? 'pi-has-error' : ''} ${allDone && !hasError ? 'pi-done' : ''}`}>
             <div className="pi-header">
-                <span className="pi-header-icon">
-                    {anyLoading ? '⚙️' : hasError ? '⚠️' : '✅'}
+                <span className="pi-header-icon" style={{ display: 'flex' }}>
+                    {anyLoading ? <Settings size={20} className="spin" /> : hasError ? <AlertTriangle size={20} className="text-danger" /> : <CheckCircle size={20} className="text-success" />}
                 </span>
                 <span className="pi-header-title">
                     {anyLoading
@@ -49,14 +50,16 @@ export const ProcessIndicator: React.FC<ProcessIndicatorProps> = ({ tasks, onDis
                             : 'Listo'}
                 </span>
                 {allDone && onDismiss && (
-                    <button className="pi-dismiss" onClick={onDismiss} aria-label="Cerrar">✕</button>
+                    <button className="pi-dismiss" onClick={onDismiss} aria-label="Cerrar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <X size={16} />
+                    </button>
                 )}
             </div>
 
             <ul className="pi-task-list">
                 {tasks.map(task => (
                     <li key={task.id} className={`pi-task ${statusClass[task.status]}`}>
-                        <span className={`pi-task-icon ${task.status === 'loading' ? 'spin' : ''}`}>
+                        <span className="pi-task-icon" style={{ display: 'flex' }}>
                             {statusIcon[task.status]}
                         </span>
                         <span className="pi-task-label">{task.label}</span>

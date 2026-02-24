@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import { Shield, X, User } from 'lucide-react';
 
 interface AdminRegisterModalProps {
     isOpen: boolean;
@@ -123,14 +124,14 @@ export const AdminRegisterModal: React.FC<AdminRegisterModalProps> = ({
         <div className="modal-overlay" onClick={handleClose}>
             <div className="modal-content admin-register-modal" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
-                    <h2>🛡️ Registrar Administrador</h2>
+                    <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Shield size={24} /> Registrar Administrador</h2>
                     <button className="modal-close" onClick={handleClose} aria-label="Cerrar">
-                        ✕
+                        <X size={24} />
                     </button>
                 </div>
                 <div className="modal-body">
                     <div className="admin-register-badge" style={{ marginBottom: '1rem' }}>
-                        <span>👤 Nueva cuenta de Administrador</span>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><User size={16} /> Nueva cuenta de Administrador</span>
                     </div>
 
                     <form className="login-form" onSubmit={handleSubmit} noValidate>
@@ -187,9 +188,10 @@ export const AdminRegisterModal: React.FC<AdminRegisterModalProps> = ({
                                 type="submit"
                                 className="btn admin-submit"
                                 disabled={submitting}
+                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
                             >
                                 {submitting && <span className="login-spinner" />}
-                                🛡️ Crear Admin
+                                <Shield size={18} /> Crear Admin
                             </button>
                         </div>
                     </form>

@@ -2,14 +2,14 @@
 
 import React from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { Zap, ClipboardList, UserPlus, ShoppingCart } from 'lucide-react';
 
 interface HeaderProps {
     cartCount: number;
     onCartClick: () => void;
-    onAdminRegisterClick?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick, onAdminRegisterClick }) => {
+export const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
     const { user, profile, isLoading, signOut } = useAuth();
 
     const handleLogout = async () => {
@@ -20,7 +20,7 @@ export const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick, onAdminR
         <header className="store-header">
             <div className="header-content">
                 <div className="header-brand">
-                    <span className="header-logo">⚡</span>
+                    <span className="header-logo"><Zap size={28} /></span>
                     <div>
                         <h1 className="header-title">TechStore</h1>
                         <p className="header-subtitle">Tu tienda de electrónicos</p>
@@ -36,16 +36,10 @@ export const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick, onAdminR
                                         {profile?.role === 'admin' && <span className="header-role-badge">Admin</span>}
                                         {user.email}
                                     </span>
-                                    <a href="/orders" className="btn btn-sm btn-ghost header-orders-btn" title="Mis pedidos">
-                                        📋 Mis pedidos
+                                    <a href="/orders" className="btn btn-sm btn-ghost header-orders-btn" title="Mis pedidos" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                                        <ClipboardList size={16} /> Mis pedidos
                                     </a>
-                                    <button
-                                        className="btn btn-sm btn-ghost header-admin-btn"
-                                        onClick={onAdminRegisterClick}
-                                        title="Registrar Admin"
-                                    >
-                                        👤 Registrar Admin
-                                    </button>
+
                                     <button
                                         className="btn btn-sm btn-secondary"
                                         onClick={handleLogout}
@@ -62,7 +56,7 @@ export const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick, onAdminR
                     )}
 
                     <button className="cart-button" onClick={onCartClick} aria-label="Abrir carrito">
-                        <span className="cart-button-icon">🛒</span>
+                        <span className="cart-button-icon"><ShoppingCart size={24} /></span>
                         {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
                     </button>
                 </div>

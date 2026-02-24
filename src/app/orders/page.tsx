@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useOrderHistory, OrderRecord } from '../../hooks/useOrderHistory';
 import { useAuth } from '../../contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import { ClipboardList, XCircle, Package, Receipt, CreditCard, ChevronDown } from 'lucide-react';
 
 export default function OrdersPage() {
     const router = useRouter();
@@ -47,7 +48,7 @@ export default function OrdersPage() {
             <div className="orders-container">
                 <div className="orders-header">
                     <a href="/" className="orders-back">← Volver a la tienda</a>
-                    <h1>📋 Historial de Pedidos</h1>
+                    <h1><ClipboardList className="inline" size={32} /> Historial de Pedidos</h1>
                     <p className="orders-subtitle">Aquí puedes ver todas tus compras realizadas</p>
                 </div>
 
@@ -60,13 +61,13 @@ export default function OrdersPage() {
 
                 {error && (
                     <div className="orders-error">
-                        <p>❌ Error al cargar pedidos: {error}</p>
+                        <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><XCircle size={20} className="text-danger" /> Error al cargar pedidos: {error}</p>
                     </div>
                 )}
 
                 {!isLoading && !error && orders.length === 0 && (
                     <div className="orders-empty">
-                        <span className="orders-empty-icon">📦</span>
+                        <span className="orders-empty-icon"><Package size={48} /></span>
                         <h3>No tienes pedidos aún</h3>
                         <p>¡Explora nuestra tienda y realiza tu primera compra!</p>
                         <a href="/" className="btn">Ir a la tienda</a>
@@ -86,7 +87,7 @@ export default function OrdersPage() {
                                 >
                                     <div className="order-card-info">
                                         <span className="order-card-id">
-                                            🧾 Orden #{order.id.slice(0, 8)}
+                                            <Receipt className="inline" size={16} /> Orden #{order.id.slice(0, 8)}
                                         </span>
                                         <span className="order-card-date">
                                             {new Date(order.created_at).toLocaleDateString('es-ES', {
@@ -102,7 +103,7 @@ export default function OrdersPage() {
                                         {statusBadge(order.status)}
                                         <span className="order-card-total">${order.total.toFixed(2)}</span>
                                         <span className={`order-chevron ${expandedId === order.id ? 'order-chevron-open' : ''}`}>
-                                            ▼
+                                            <ChevronDown size={20} />
                                         </span>
                                     </div>
                                 </div>
@@ -123,7 +124,7 @@ export default function OrdersPage() {
                                             ))}
                                         </div>
                                         <div className="order-card-footer">
-                                            <span>Método: 💳 {order.payment_method === 'card_simulated' ? 'Tarjeta (simulada)' : order.payment_method}</span>
+                                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>Método: <CreditCard size={16} /> {order.payment_method === 'card_simulated' ? 'Tarjeta (simulada)' : order.payment_method}</span>
                                             <strong>Total: ${order.total.toFixed(2)}</strong>
                                         </div>
                                     </div>

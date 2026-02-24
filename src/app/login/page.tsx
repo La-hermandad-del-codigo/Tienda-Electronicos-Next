@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../contexts/AuthContext';
 import '../../styles/login.css';
+import { Zap, AlertTriangle, CheckCircle, Shield } from 'lucide-react';
 
 type AuthMode = 'login' | 'register';
 
@@ -113,7 +114,7 @@ export default function LoginPage() {
             <div className="login-page">
                 <div className="login-container">
                     <div className="login-header">
-                        <span className="login-logo">⚡</span>
+                        <span className="login-logo"><Zap size={32} /></span>
                         <h1 className="login-title">TechStore</h1>
                         <p className="login-subtitle">Cargando...</p>
                     </div>
@@ -129,7 +130,7 @@ export default function LoginPage() {
         <div className="login-page">
             <div className="login-container">
                 <div className="login-header">
-                    <span className="login-logo">⚡</span>
+                    <span className="login-logo"><Zap size={32} /></span>
                     <h1 className="login-title">TechStore</h1>
                     <p className="login-subtitle">
                         {mode === 'login' ? 'Inicia sesión en tu cuenta' : 'Crea tu cuenta'}
@@ -156,14 +157,14 @@ export default function LoginPage() {
                 <div className="login-card">
                     {serverError && (
                         <div className="login-error">
-                            <span className="login-error-icon">⚠️</span>
+                            <span className="login-error-icon"><AlertTriangle size={20} /></span>
                             <span>{serverError}</span>
                         </div>
                     )}
 
                     {successMessage && (
                         <div className="login-success">
-                            <span>✅</span>
+                            <span><CheckCircle size={20} /></span>
                             <span>{successMessage}</span>
                         </div>
                     )}
@@ -224,6 +225,14 @@ export default function LoginPage() {
                             {submitting && <span className="login-spinner" />}
                             {mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}
                         </button>
+
+                        {mode === 'register' && (
+                            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+                                <a href="/admin/register" className="btn btn-ghost btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: 'var(--muted-foreground)' }}>
+                                    <Shield size={16} /> Registrarse como Administrador
+                                </a>
+                            </div>
+                        )}
                     </form>
                 </div>
 

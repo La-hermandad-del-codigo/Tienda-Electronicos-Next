@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { PaymentGateway } from './PaymentGateway';
 import { CartItem as CartItemType } from '../../types/product';
 import { EmptyState } from '../ui/EmptyState';
+import { ShoppingCart, X, Trash2, Lock, CreditCard, Key } from 'lucide-react';
 
 interface CartDrawerProps {
     isOpen: boolean;
@@ -55,9 +56,9 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
             {/* Drawer */}
             <aside className={`cart-drawer ${isOpen ? 'cart-drawer-open' : ''}`}>
                 <div className="cart-drawer-header">
-                    <h2>🛒 Carrito</h2>
+                    <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><ShoppingCart size={24} /> Carrito</h2>
                     <button className="modal-close" onClick={onClose} aria-label="Cerrar carrito">
-                        ✕
+                        <X size={24} />
                     </button>
                 </div>
 
@@ -72,7 +73,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                         />
                     ) : items.length === 0 ? (
                         <EmptyState
-                            icon="🛒"
+                            icon={<ShoppingCart size={48} />}
                             title="Carrito vacío"
                             description="Agrega productos para comenzar tu compra."
                         />
@@ -110,7 +111,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                                                 onClick={() => onRemoveItem(item.product.id)}
                                                 aria-label="Eliminar del carrito"
                                             >
-                                                🗑️
+                                                <Trash2 size={16} />
                                             </button>
                                         </div>
                                     </div>
@@ -129,16 +130,22 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
                         {!isAuthenticated && (
                             <div className="cart-login-notice">
-                                <p>🔒 Inicia sesión para completar tu compra</p>
+                                <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+                                    <Lock size={16} /> Inicia sesión para completar tu compra
+                                </p>
                             </div>
                         )}
 
                         <button
                             className="btn cart-checkout-btn"
-                            style={{ width: '100%' }}
+                            style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
                             onClick={handleCheckoutClick}
                         >
-                            {isAuthenticated ? '💳 Proceder al pago' : '🔑 Iniciar sesión para comprar'}
+                            {isAuthenticated ? (
+                                <><CreditCard size={18} /> Proceder al pago</>
+                            ) : (
+                                <><Key size={18} /> Iniciar sesión para comprar</>
+                            )}
                         </button>
                         <button
                             className="btn btn-secondary"

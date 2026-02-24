@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
 import '../../../styles/login.css';
+import { Shield, User, AlertTriangle, CheckCircle } from 'lucide-react';
 
 export default function AdminRegisterPage() {
     const router = useRouter();
@@ -107,7 +108,7 @@ export default function AdminRegisterPage() {
             <div className="login-page admin-register-page">
                 <div className="login-container">
                     <div className="login-header">
-                        <span className="login-logo">🛡️</span>
+                        <span className="login-logo"><Shield size={32} /></span>
                         <h1 className="login-title">TechStore Admin</h1>
                         <p className="login-subtitle">Cargando...</p>
                     </div>
@@ -122,26 +123,26 @@ export default function AdminRegisterPage() {
         <div className="login-page admin-register-page">
             <div className="login-container">
                 <div className="login-header">
-                    <span className="login-logo">🛡️</span>
+                    <span className="login-logo"><Shield size={32} /></span>
                     <h1 className="login-title">TechStore Admin</h1>
                     <p className="login-subtitle">Registro de Administrador</p>
                 </div>
 
                 <div className="admin-register-badge">
-                    <span>👤 Cuenta de Administrador</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}><User size={16} /> Cuenta de Administrador</span>
                 </div>
 
                 <div className="login-card">
                     {serverError && (
                         <div className="login-error">
-                            <span className="login-error-icon">⚠️</span>
+                            <span className="login-error-icon"><AlertTriangle size={20} /></span>
                             <span>{serverError}</span>
                         </div>
                     )}
 
                     {successMessage && (
                         <div className="login-success">
-                            <span>✅</span>
+                            <span><CheckCircle size={20} /></span>
                             <span>{successMessage}</span>
                         </div>
                     )}
@@ -198,7 +199,7 @@ export default function AdminRegisterPage() {
                             disabled={submitting}
                         >
                             {submitting && <span className="login-spinner" />}
-                            🛡️ Crear cuenta de Administrador
+                            <Shield size={18} className="inline mr-2" /> Crear cuenta de Administrador
                         </button>
                     </form>
                 </div>

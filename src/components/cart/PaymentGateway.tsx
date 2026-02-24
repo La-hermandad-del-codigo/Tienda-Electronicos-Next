@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { CartItem } from '../../types/product';
 import { useCheckout } from '../../hooks/useCheckout';
 import { useAuth } from '../../contexts/AuthContext';
+import { CreditCard, Lock, Hourglass, CheckCircle, XCircle, Circle, PartyPopper, X } from 'lucide-react';
 
 interface PaymentGatewayProps {
     isOpen: boolean;
@@ -103,20 +104,20 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({
 
     const stepIcon = (state: string) => {
         switch (state) {
-            case 'loading': return '⏳';
-            case 'success': return '✅';
-            case 'error': return '❌';
-            default: return '⬜';
+            case 'loading': return <Hourglass size={16} />;
+            case 'success': return <CheckCircle size={16} />;
+            case 'error': return <XCircle size={16} />;
+            default: return <Circle size={16} />;
         }
     };
 
     return (
         <div className="payment-gateway">
             <div className="payment-header">
-                <h3>💳 Pasarela de Pago</h3>
+                <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}><CreditCard size={24} /> Pasarela de Pago</h3>
                 {!processing && (
-                    <button className="modal-close" onClick={handleClose} aria-label="Cerrar">
-                        ✕
+                    <button className="modal-close" onClick={handleClose} aria-label="Cerrar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <X size={24} />
                     </button>
                 )}
             </div>
@@ -144,7 +145,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({
                         {/* Card form */}
                         <div className="payment-card-form">
                             <div className="payment-card-visual">
-                                <div className="card-chip">💳</div>
+                                <div className="card-chip"><CreditCard size={24} /></div>
                                 <div className="card-number-display">
                                     {cardNumber || '•••• •••• •••• ••••'}
                                 </div>
@@ -218,8 +219,9 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({
                                 className="payment-pay-btn"
                                 onClick={handlePay}
                                 disabled={processing}
+                                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
                             >
-                                🔒 Pagar ${cartTotal.toFixed(2)}
+                                <Lock size={16} /> Pagar ${cartTotal.toFixed(2)}
                             </button>
                         </div>
                     </>
@@ -251,7 +253,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({
 
                             {error && (
                                 <div className="payment-error">
-                                    <p>❌ {error}</p>
+                                    <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}><XCircle size={20} /> {error}</p>
                                     <div className="payment-actions">
                                         <button className="btn" onClick={() => { reset(); setShowProcessing(false); }}>
                                             Reintentar
@@ -265,7 +267,7 @@ export const PaymentGateway: React.FC<PaymentGatewayProps> = ({
 
                             {orderResult && (
                                 <div className="payment-success">
-                                    <div className="payment-success-icon">🎉</div>
+                                    <div className="payment-success-icon"><PartyPopper size={48} /></div>
                                     <h4>¡Pago completado!</h4>
                                     <p className="payment-order-id">Orden: {orderResult.orderId.slice(0, 8)}...</p>
                                     <p>Total: <strong>${orderResult.total.toFixed(2)}</strong></p>
