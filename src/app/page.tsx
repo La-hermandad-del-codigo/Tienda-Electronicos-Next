@@ -50,7 +50,7 @@ export default function Home() {
     } = useCart();
 
     const { toasts, removeToast, success, error: showError } = useToast();
-    const { isAdmin, user } = useAuth();
+    const { isAdmin, isComerciante, user } = useAuth();
 
     // Sincronizar carrito cuando cambian los productos (edición/eliminación)
     React.useEffect(() => {
@@ -109,12 +109,12 @@ export default function Home() {
 
     const handleDeleteConfirm = async () => {
         if (deletingProduct) {
-            const ok = await deleteProduct(deletingProduct.id);
+            const { success: ok, error } = await deleteProduct(deletingProduct.id);
             if (ok) {
                 removeFromCart(deletingProduct.id);
                 success(`"${deletingProduct.name}" eliminado correctamente`);
             } else {
-                showError(productError || 'Error al eliminar el producto');
+                showError(error || 'Error al eliminar el producto');
             }
             setDeletingProduct(null);
         }
@@ -175,6 +175,8 @@ export default function Home() {
                     onAddToCart={handleAddToCart}
                     onViewComments={setViewingCommentsFor}
                     isAdmin={isAdmin}
+                    isComerciante={isComerciante}
+                    currentUserId={user?.id}
                 />
             </main>
 

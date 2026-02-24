@@ -26,6 +26,8 @@ interface ProductListProps {
     onAddToCart: (product: Product) => void;
     onViewComments: (product: Product) => void;
     isAdmin?: boolean;
+    isComerciante?: boolean;
+    currentUserId?: string;
 }
 
 export const ProductList: React.FC<ProductListProps> = ({
@@ -45,6 +47,8 @@ export const ProductList: React.FC<ProductListProps> = ({
     onAddToCart,
     onViewComments,
     isAdmin = false,
+    isComerciante = false,
+    currentUserId,
 }) => {
     const {
         displayedItems,
@@ -103,7 +107,7 @@ export const ProductList: React.FC<ProductListProps> = ({
                     </select>
                 </div>
 
-                {isAdmin && (
+                {isComerciante && (
                     <button className="btn" onClick={onNewProduct} disabled={!isLoaded}>
                         + Nuevo producto
                     </button>
@@ -163,25 +167,25 @@ export const ProductList: React.FC<ProductListProps> = ({
                                             </span>
                                         </div>
                                         <div className="product-card-actions">
-                                            {isAdmin && (
-                                                <>
-                                                    <button
-                                                        className="btn-icon"
-                                                        onClick={() => onEditProduct(product)}
-                                                        title="Editar"
-                                                        aria-label="Editar producto"
-                                                    >
-                                                        <Edit2 size={16} />
-                                                    </button>
-                                                    <button
-                                                        className="btn-icon btn-icon-danger"
-                                                        onClick={() => onDeleteProduct(product)}
-                                                        title="Eliminar"
-                                                        aria-label="Eliminar producto"
-                                                    >
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </>
+                                            {isComerciante && product.created_by === currentUserId && (
+                                                <button
+                                                    className="btn-icon"
+                                                    onClick={() => onEditProduct(product)}
+                                                    title="Editar"
+                                                    aria-label="Editar producto"
+                                                >
+                                                    <Edit2 size={16} />
+                                                </button>
+                                            )}
+                                            {(isAdmin || (isComerciante && product.created_by === currentUserId)) && (
+                                                <button
+                                                    className="btn-icon btn-icon-danger"
+                                                    onClick={() => onDeleteProduct(product)}
+                                                    title="Eliminar"
+                                                    aria-label="Eliminar producto"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
                                             )}
                                             <button
                                                 className="btn-icon"

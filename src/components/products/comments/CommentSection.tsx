@@ -45,7 +45,7 @@ const buildCommentTree = (flatComments: Comment[]): Comment[] => {
 export const CommentSection: React.FC<CommentSectionProps> = ({ productId }) => {
     const [comments, setComments] = useState<Comment[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const { user, isLoading: isAuthLoading } = useAuth();
+    const { user, isAdmin, isLoading: isAuthLoading } = useAuth();
     const currentUserId = user?.id || null;
 
     const fetchComments = useCallback(async () => {
@@ -144,6 +144,22 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ productId }) => 
         // No necesitamos hacer fetchComments manual aquí porque Realtime lo hará por nosotros
     };
 
+    const handleDeleteComment = async (commentId: string) => {
+        if (!window.confirm("¿Seguro que deseas eliminar este comentario?")) return;
+        const { error } = await supabase
+            .from('product_comments')
+            .delete()
+            .eq('id', commentId);
+
+        if (error) {
+            console.error('Error eliminando comentario:', error);
+            alert("No se pudo eliminar el comentario.");
+        } else {
+            // Recargar manualmente, ya que Realtime puede omitir eventos DELETE si la tabla no está en replica identity full
+            fetchComments();
+        }
+    };
+
     return (
         <div className="product-comments-section" style={{ marginTop: '1.5rem' }}>
             {isAuthLoading ? (
@@ -172,7 +188,9 @@ export const CommentSection: React.FC<CommentSectionProps> = ({ productId }) => 
                             key={comment.id}
                             comment={comment}
                             onReply={(parentId, content) => handleSubmitComment(content, parentId)}
+                            onDelete={handleDeleteComment}
                             currentUserId={currentUserId}
+                            isAdmin={isAdmin}
                         />
                     ))
                 )}

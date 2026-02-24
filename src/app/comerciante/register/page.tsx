@@ -2,17 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../../contexts/AuthContext';
-import '../../styles/login.css';
-import { Zap, AlertTriangle, CheckCircle, Shield } from 'lucide-react';
+import { useAuth } from '../../../contexts/AuthContext';
+import { supabase } from '../../../lib/supabase';
+import '../../../styles/login.css';
+import { Store, Shield, AlertTriangle, CheckCircle } from 'lucide-react';
 
-type AuthMode = 'login' | 'register';
-
-export default function LoginPage() {
+export default function ComercianteRegisterPage() {
     const router = useRouter();
-    const { user, isLoading, signIn, signUp } = useAuth();
+    const { user, isLoading, signUp } = useAuth();
 
-    const [mode, setMode] = useState<AuthMode>('login');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -27,20 +25,6 @@ export default function LoginPage() {
             router.replace('/');
         }
     }, [user, isLoading, router]);
-
-    const resetForm = () => {
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
-        setErrors({});
-        setServerError('');
-        setSuccessMessage('');
-    };
-
-    const switchMode = (newMode: AuthMode) => {
-        setMode(newMode);
-        resetForm();
-    };
 
     const validate = (): boolean => {
         const newErrors: typeof errors = {};
@@ -57,7 +41,7 @@ export default function LoginPage() {
             newErrors.password = 'Mínimo 6 caracteres';
         }
 
-        if (mode === 'register' && password !== confirmPassword) {
+        if (password !== confirmPassword) {
             newErrors.confirm = 'Las contraseñas no coinciden';
         }
 
@@ -75,23 +59,34 @@ export default function LoginPage() {
         setSubmitting(true);
 
         try {
-            if (mode === 'login') {
-                const { error } = await signIn(email, password);
-                if (error) {
-                    setServerError(translateError(error.message));
-                } else {
-                    router.replace('/');
-                }
+            const { error } = await signUp(email, password);
+
+            if (error) {
+                setServerError(translateError(error.message));
             } else {
-                const { error } = await signUp(email, password);
-                if (error) {
-                    setServerError(translateError(error.message));
-                } else {
-                    setSuccessMessage('¡Cuenta creada! Revisa tu correo para confirmar o inicia sesión.');
-                    setMode('login');
-                    setPassword('');
-                    setConfirmPassword('');
-                }
+                // Try to promote to comerciante after sign up
+                // Need to wait for the user to be created in profiles
+                // We'll use a small delay and then call the RPC
+                setTimeout(async () => {
+                    try {
+                        const { data: { user: newUser } } = await supabase.auth.getUser();
+                        if (newUser) {
+                            await supabase.rpc('promote_to_comerciante', {
+                                user_email: email,
+                            });
+                        }
+                    } catch {
+                        // Promotion will happen after email confirmation
+                    }
+                }, 1000);
+
+                setSuccessMessage(
+                    '¡Cuenta de comerciante creada! Revisa tu correo para confirmar. ' +
+                    'Después de confirmar, tu cuenta tendrá permisos para gestionar tus propios productos.'
+                );
+                setEmail('');
+                setPassword('');
+                setConfirmPassword('');
             }
         } catch {
             setServerError('Ocurrió un error inesperado. Intenta de nuevo.');
@@ -108,14 +103,13 @@ export default function LoginPage() {
         return msg;
     };
 
-    // Show nothing while checking auth state
     if (isLoading) {
         return (
             <div className="login-page">
                 <div className="login-container">
                     <div className="login-header">
-                        <span className="login-logo"><Zap size={32} /></span>
-                        <h1 className="login-title">TechStore</h1>
+                        <span className="login-logo"><Store size={32} /></span>
+                        <h1 className="login-title">TechStore Comerciante</h1>
                         <p className="login-subtitle">Cargando...</p>
                     </div>
                 </div>
@@ -123,38 +117,26 @@ export default function LoginPage() {
         );
     }
 
-    // Already authenticated — will redirect
     if (user) return null;
 
     return (
         <div className="login-page">
             <div className="login-container">
                 <div className="login-header">
-                    <span className="login-logo"><Zap size={32} /></span>
-                    <h1 className="login-title">TechStore</h1>
-                    <p className="login-subtitle">
-                        {mode === 'login' ? 'Inicia sesión en tu cuenta' : 'Crea tu cuenta'}
-                    </p>
+                    <span className="login-logo"><Store size={32} /></span>
+                    <h1 className="login-title">TechStore Comerciantes</h1>
+                    <p className="login-subtitle">Únete para vender tus productos</p>
                 </div>
 
-                <div className="login-tabs">
-                    <button
-                        className={`login-tab ${mode === 'login' ? 'active' : ''}`}
-                        onClick={() => switchMode('login')}
-                        type="button"
-                    >
-                        Iniciar sesión
-                    </button>
-                    <button
-                        className={`login-tab ${mode === 'register' ? 'active' : ''}`}
-                        onClick={() => switchMode('register')}
-                        type="button"
-                    >
-                        Registrarse
-                    </button>
+                <div className="admin-register-badge" style={{
+                    background: 'var(--success-bg, rgba(16, 185, 129, 0.15))',
+                    color: 'var(--success, #10b981)',
+                    border: '1px solid var(--success-bg, rgba(16, 185, 129, 0.3))'
+                }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}><Store size={16} /> Cuenta de Comerciante</span>
                 </div>
 
-                <div className="login-card">
+                <div className="login-card" style={{ marginTop: '1rem' }}>
                     {serverError && (
                         <div className="login-error">
                             <span className="login-error-icon"><AlertTriangle size={20} /></span>
@@ -171,13 +153,13 @@ export default function LoginPage() {
 
                     <form className="login-form" onSubmit={handleSubmit} noValidate>
                         <div className="login-field">
-                            <label htmlFor="login-email">Correo electrónico</label>
+                            <label htmlFor="comerciante-email">Correo electrónico</label>
                             <input
-                                id="login-email"
+                                id="comerciante-email"
                                 type="email"
                                 value={email}
                                 onChange={e => { setEmail(e.target.value); setErrors(p => ({ ...p, email: undefined })); }}
-                                placeholder="tu@correo.com"
+                                placeholder="comerciante@correo.com"
                                 className={errors.email ? 'input-error' : ''}
                                 autoComplete="email"
                                 disabled={submitting}
@@ -186,62 +168,51 @@ export default function LoginPage() {
                         </div>
 
                         <div className="login-field">
-                            <label htmlFor="login-password">Contraseña</label>
+                            <label htmlFor="comerciante-password">Contraseña</label>
                             <input
-                                id="login-password"
+                                id="comerciante-password"
                                 type="password"
                                 value={password}
                                 onChange={e => { setPassword(e.target.value); setErrors(p => ({ ...p, password: undefined })); }}
                                 placeholder="Mínimo 6 caracteres"
                                 className={errors.password ? 'input-error' : ''}
-                                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                                autoComplete="new-password"
                                 disabled={submitting}
                             />
                             {errors.password && <p className="login-field-error">{errors.password}</p>}
                         </div>
 
-                        {mode === 'register' && (
-                            <div className="login-field">
-                                <label htmlFor="login-confirm">Confirmar contraseña</label>
-                                <input
-                                    id="login-confirm"
-                                    type="password"
-                                    value={confirmPassword}
-                                    onChange={e => { setConfirmPassword(e.target.value); setErrors(p => ({ ...p, confirm: undefined })); }}
-                                    placeholder="Repite tu contraseña"
-                                    className={errors.confirm ? 'input-error' : ''}
-                                    autoComplete="new-password"
-                                    disabled={submitting}
-                                />
-                                {errors.confirm && <p className="login-field-error">{errors.confirm}</p>}
-                            </div>
-                        )}
+                        <div className="login-field">
+                            <label htmlFor="comerciante-confirm">Confirmar contraseña</label>
+                            <input
+                                id="comerciante-confirm"
+                                type="password"
+                                value={confirmPassword}
+                                onChange={e => { setConfirmPassword(e.target.value); setErrors(p => ({ ...p, confirm: undefined })); }}
+                                placeholder="Repite tu contraseña"
+                                className={errors.confirm ? 'input-error' : ''}
+                                autoComplete="new-password"
+                                disabled={submitting}
+                            />
+                            {errors.confirm && <p className="login-field-error">{errors.confirm}</p>}
+                        </div>
 
                         <button
                             type="submit"
                             className="login-submit"
+                            style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
                             disabled={submitting}
                         >
                             {submitting && <span className="login-spinner" />}
-                            {mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}
+                            <Store size={18} className="inline mr-2" /> Crear cuenta de Comerciante
                         </button>
-
-                        {mode === 'register' && (
-                            <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center' }}>
-                                <a href="/comerciante/register" className="btn btn-ghost btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)' }}>
-                                    <Zap size={16} /> Registrarse como Comerciante
-                                </a>
-                                <div style={{ height: '1px', width: '60%', backgroundColor: 'rgba(255,255,255,0.05)' }} />
-                                <a href="/admin/register" className="btn btn-ghost btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: 'var(--muted-foreground)' }}>
-                                    <Shield size={16} /> Registrarse como Administrador
-                                </a>
-                            </div>
-                        )}
                     </form>
                 </div>
 
                 <div className="login-back">
                     <a href="/">← Volver a la tienda</a>
+                    <span style={{ margin: '0 0.5rem', color: 'var(--muted-foreground)' }}>|</span>
+                    <a href="/login">Iniciar sesión normal</a>
                 </div>
             </div>
         </div>

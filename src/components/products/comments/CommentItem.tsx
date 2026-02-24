@@ -6,7 +6,9 @@ import { MessageSquare, Clock } from 'lucide-react';
 interface CommentItemProps {
     comment: Comment;
     onReply: (parentId: string, content: string) => Promise<void>;
+    onDelete: (commentId: string) => Promise<void>;
     currentUserId: string | null;
+    isAdmin: boolean;
 }
 
 const formatTimeAgo = (dateString: string) => {
@@ -25,12 +27,22 @@ const formatTimeAgo = (dateString: string) => {
     return date.toLocaleDateString();
 };
 
-export const CommentItem: React.FC<CommentItemProps> = ({ comment, onReply, currentUserId }) => {
+export const CommentItem: React.FC<CommentItemProps> = ({ comment, onReply, onDelete, currentUserId, isAdmin }) => {
     const [isReplying, setIsReplying] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleReplySubmit = async (content: string) => {
         await onReply(comment.id, content);
         setIsReplying(false);
+    };
+
+    const handleDeleteClick = async () => {
+        setIsDeleting(true);
+        try {
+            await onDelete(comment.id);
+        } finally {
+            setIsDeleting(false);
+        }
     };
 
     const authorName = comment.users?.name || 'Usuario';
@@ -98,6 +110,29 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onReply, curr
                                 <MessageSquare size={14} />
                                 {isReplying ? 'Cancelar' : 'Responder'}
                             </button>
+                            {(isAdmin || comment.user_id === currentUserId) && (
+                                <button
+                                    onClick={handleDeleteClick}
+                                    disabled={isDeleting}
+                                    style={{
+                                        background: 'none',
+                                        border: 'none',
+                                        color: 'var(--muted-foreground)',
+                                        cursor: 'pointer',
+                                        fontSize: '0.85rem',
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '0.25rem',
+                                        padding: '0.25rem 0.5rem',
+                                        borderRadius: '4px',
+                                        transition: 'all var(--transition)'
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.color = 'var(--danger-color, #ef4444)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.color = 'var(--muted-foreground)'}
+                                >
+                                    {isDeleting ? 'Eliminando...' : 'Eliminar'}
+                                </button>
+                            )}
                         </div>
                     )}
 
@@ -125,7 +160,9 @@ export const CommentItem: React.FC<CommentItemProps> = ({ comment, onReply, curr
                                     key={reply.id}
                                     comment={reply}
                                     onReply={onReply}
+                                    onDelete={onDelete}
                                     currentUserId={currentUserId}
+                                    isAdmin={isAdmin}
                                 />
                             ))}
                         </div>
