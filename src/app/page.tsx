@@ -11,6 +11,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Header } from '../components/layout/Header';
 import { ProductList } from '../components/products/ProductList';
 import { ProductForm } from '../components/products/ProductForm';
+import { CommentSection } from '../components/products/comments/CommentSection';
 import { CartDrawer } from '../components/cart/CartDrawer';
 import { Modal } from '../components/ui/Modal';
 import { ConfirmDialog } from '../components/ui/ConfirmDialog';
@@ -63,6 +64,7 @@ export default function Home() {
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
+    const [viewingCommentsFor, setViewingCommentsFor] = useState<Product | null>(null);
     const [processDismissed, setProcessDismissed] = useState(false);
 
     // Handlers de productos
@@ -171,6 +173,7 @@ export default function Home() {
                     onEditProduct={handleEditProduct}
                     onDeleteProduct={handleDeleteRequest}
                     onAddToCart={handleAddToCart}
+                    onViewComments={setViewingCommentsFor}
                     isAdmin={isAdmin}
                 />
             </main>
@@ -196,6 +199,15 @@ export default function Home() {
                 title="Eliminar producto"
                 message={`¿Estás seguro de que deseas eliminar "${deletingProduct?.name}"? Esta acción no se puede deshacer.`}
             />
+
+            {/* Modal: Comentarios del producto */}
+            <Modal
+                isOpen={!!viewingCommentsFor}
+                onClose={() => setViewingCommentsFor(null)}
+                title={`Comentarios - ${viewingCommentsFor?.name || ''}`}
+            >
+                {viewingCommentsFor && <CommentSection productId={viewingCommentsFor.id} />}
+            </Modal>
 
             {/* Drawer del carrito */}
             <CartDrawer

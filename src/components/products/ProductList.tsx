@@ -7,7 +7,7 @@ import { ProcessIndicator } from '../ui/ProcessIndicator';
 import { SkeletonGrid } from '../ui/SkeletonCard';
 import { EmptyState } from '../ui/EmptyState';
 import { useInfiniteScroll } from '../../hooks/useInfiniteScroll';
-import { Search, X, Edit2, Trash2, ShoppingCart } from 'lucide-react';
+import { Search, X, Edit2, Trash2, ShoppingCart, MessageSquare } from 'lucide-react';
 
 interface ProductListProps {
     products: Product[];
@@ -24,6 +24,7 @@ interface ProductListProps {
     onEditProduct: (product: Product) => void;
     onDeleteProduct: (product: Product) => void;
     onAddToCart: (product: Product) => void;
+    onViewComments: (product: Product) => void;
     isAdmin?: boolean;
 }
 
@@ -42,6 +43,7 @@ export const ProductList: React.FC<ProductListProps> = ({
     onEditProduct,
     onDeleteProduct,
     onAddToCart,
+    onViewComments,
     isAdmin = false,
 }) => {
     const {
@@ -181,6 +183,15 @@ export const ProductList: React.FC<ProductListProps> = ({
                                                     </button>
                                                 </>
                                             )}
+                                            <button
+                                                className="btn-icon"
+                                                onClick={() => onViewComments(product)}
+                                                title="Comentarios"
+                                                aria-label="Ver comentarios"
+                                                style={{ color: 'var(--primary-color)' }}
+                                            >
+                                                <MessageSquare size={16} />
+                                            </button>
                                             <button
                                                 className="btn btn-sm"
                                                 onClick={() => onAddToCart(product)}
