@@ -28,12 +28,24 @@ export const CATEGORIES = [
   'Gaming',
 ] as const;
 
-export type OrderStatus = 'pending' | 'created' | 'failed';
+export type OrderStatus = 'pending' | 'created' | 'completed' | 'failed';
 
 export interface Order {
   id: string;
+  user_id?: string;
   items: CartItem[];
   total: number;
   createdAt: string;
   status: OrderStatus;
+  payment_method?: string;
+}
+
+// Representación de order_items en la base de datos
+export interface OrderItemDB {
+  id: string;
+  order_id: string;
+  product_id: string;
+  product_name: string;
+  product_price: number;
+  quantity: number;
 }

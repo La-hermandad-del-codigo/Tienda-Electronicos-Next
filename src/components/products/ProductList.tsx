@@ -7,6 +7,7 @@ import { ProcessIndicator } from '../ui/ProcessIndicator';
 import { SkeletonGrid } from '../ui/SkeletonCard';
 import { EmptyState } from '../ui/EmptyState';
 import { useInfiniteScroll } from '../../hooks/useInfiniteScroll';
+import { Search, X, Edit2, Trash2, ShoppingCart } from 'lucide-react';
 
 interface ProductListProps {
     products: Product[];
@@ -66,7 +67,7 @@ export const ProductList: React.FC<ProductListProps> = ({
             <div className="toolbar">
                 <div className="toolbar-filters">
                     <div className="search-bar">
-                        <span className="search-icon">🔍</span>
+                        <span className="search-icon"><Search size={20} /></span>
                         <input
                             type="text"
                             placeholder="Buscar productos..."
@@ -80,7 +81,7 @@ export const ProductList: React.FC<ProductListProps> = ({
                                 onClick={() => onSearchChange('')}
                                 aria-label="Limpiar búsqueda"
                             >
-                                ✕
+                                <X size={16} />
                             </button>
                         )}
                     </div>
@@ -114,7 +115,7 @@ export const ProductList: React.FC<ProductListProps> = ({
             {isLoaded && (
                 products.length === 0 ? (
                     <EmptyState
-                        icon="🔍"
+                        icon={<Search size={48} />}
                         title="No se encontraron productos"
                         description={
                             searchTerm || categoryFilter
@@ -168,7 +169,7 @@ export const ProductList: React.FC<ProductListProps> = ({
                                                         title="Editar"
                                                         aria-label="Editar producto"
                                                     >
-                                                        ✏️
+                                                        <Edit2 size={16} />
                                                     </button>
                                                     <button
                                                         className="btn-icon btn-icon-danger"
@@ -176,7 +177,7 @@ export const ProductList: React.FC<ProductListProps> = ({
                                                         title="Eliminar"
                                                         aria-label="Eliminar producto"
                                                     >
-                                                        🗑️
+                                                        <Trash2 size={16} />
                                                     </button>
                                                 </>
                                             )}
@@ -184,8 +185,9 @@ export const ProductList: React.FC<ProductListProps> = ({
                                                 className="btn btn-sm"
                                                 onClick={() => onAddToCart(product)}
                                                 disabled={product.stock === 0}
+                                                style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
                                             >
-                                                🛒 Agregar
+                                                <ShoppingCart size={16} /> Agregar
                                             </button>
                                         </div>
                                     </div>

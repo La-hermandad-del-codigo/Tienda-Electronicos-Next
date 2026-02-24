@@ -3,14 +3,16 @@
 import React from 'react';
 
 interface EmptyStateProps {
-    icon?: string;
+    icon?: React.ReactNode;
     title: string;
     description?: string;
     action?: React.ReactNode;
 }
 
+import { Package } from 'lucide-react';
+
 export const EmptyState: React.FC<EmptyStateProps> = ({
-    icon = '📦',
+    icon = <Package size={48} />,
     title,
     description,
     action,

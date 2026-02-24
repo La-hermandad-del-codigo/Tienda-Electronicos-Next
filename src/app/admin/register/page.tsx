@@ -2,17 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../../contexts/AuthContext';
-import '../../styles/login.css';
-import { Zap, AlertTriangle, CheckCircle, Shield } from 'lucide-react';
+import { useAuth } from '../../../contexts/AuthContext';
+import { supabase } from '../../../lib/supabase';
+import '../../../styles/login.css';
+import { Shield, User, AlertTriangle, CheckCircle } from 'lucide-react';
 
-type AuthMode = 'login' | 'register';
-
-export default function LoginPage() {
+export default function AdminRegisterPage() {
     const router = useRouter();
-    const { user, isLoading, signIn, signUp } = useAuth();
+    const { user, isLoading, signUp } = useAuth();
 
-    const [mode, setMode] = useState<AuthMode>('login');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -27,20 +25,6 @@ export default function LoginPage() {
             router.replace('/');
         }
     }, [user, isLoading, router]);
-
-    const resetForm = () => {
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
-        setErrors({});
-        setServerError('');
-        setSuccessMessage('');
-    };
-
-    const switchMode = (newMode: AuthMode) => {
-        setMode(newMode);
-        resetForm();
-    };
 
     const validate = (): boolean => {
         const newErrors: typeof errors = {};
@@ -57,7 +41,7 @@ export default function LoginPage() {
             newErrors.password = 'Mínimo 6 caracteres';
         }
 
-        if (mode === 'register' && password !== confirmPassword) {
+        if (password !== confirmPassword) {
             newErrors.confirm = 'Las contraseñas no coinciden';
         }
 
@@ -75,23 +59,34 @@ export default function LoginPage() {
         setSubmitting(true);
 
         try {
-            if (mode === 'login') {
-                const { error } = await signIn(email, password);
-                if (error) {
-                    setServerError(translateError(error.message));
-                } else {
-                    router.replace('/');
-                }
+            const { error } = await signUp(email, password);
+
+            if (error) {
+                setServerError(translateError(error.message));
             } else {
-                const { error } = await signUp(email, password);
-                if (error) {
-                    setServerError(translateError(error.message));
-                } else {
-                    setSuccessMessage('¡Cuenta creada! Revisa tu correo para confirmar o inicia sesión.');
-                    setMode('login');
-                    setPassword('');
-                    setConfirmPassword('');
-                }
+                // Try to promote to admin after sign up
+                // Need to wait for the user to be created in profiles
+                // We'll use a small delay and then call the RPC
+                setTimeout(async () => {
+                    try {
+                        const { data: { user: newUser } } = await supabase.auth.getUser();
+                        if (newUser) {
+                            await supabase.rpc('promote_to_admin', {
+                                target_user_id: newUser.id,
+                            });
+                        }
+                    } catch {
+                        // Promotion will happen after email confirmation
+                    }
+                }, 1000);
+
+                setSuccessMessage(
+                    '¡Cuenta de administrador creada! Revisa tu correo para confirmar. ' +
+                    'Después de confirmar tu correo, tu cuenta tendrá permisos de administrador.'
+                );
+                setEmail('');
+                setPassword('');
+                setConfirmPassword('');
             }
         } catch {
             setServerError('Ocurrió un error inesperado. Intenta de nuevo.');
@@ -108,14 +103,13 @@ export default function LoginPage() {
         return msg;
     };
 
-    // Show nothing while checking auth state
     if (isLoading) {
         return (
-            <div className="login-page">
+            <div className="login-page admin-register-page">
                 <div className="login-container">
                     <div className="login-header">
-                        <span className="login-logo"><Zap size={32} /></span>
-                        <h1 className="login-title">TechStore</h1>
+                        <span className="login-logo"><Shield size={32} /></span>
+                        <h1 className="login-title">TechStore Admin</h1>
                         <p className="login-subtitle">Cargando...</p>
                     </div>
                 </div>
@@ -123,35 +117,19 @@ export default function LoginPage() {
         );
     }
 
-    // Already authenticated — will redirect
     if (user) return null;
 
     return (
-        <div className="login-page">
+        <div className="login-page admin-register-page">
             <div className="login-container">
                 <div className="login-header">
-                    <span className="login-logo"><Zap size={32} /></span>
-                    <h1 className="login-title">TechStore</h1>
-                    <p className="login-subtitle">
-                        {mode === 'login' ? 'Inicia sesión en tu cuenta' : 'Crea tu cuenta'}
-                    </p>
+                    <span className="login-logo"><Shield size={32} /></span>
+                    <h1 className="login-title">TechStore Admin</h1>
+                    <p className="login-subtitle">Registro de Administrador</p>
                 </div>
 
-                <div className="login-tabs">
-                    <button
-                        className={`login-tab ${mode === 'login' ? 'active' : ''}`}
-                        onClick={() => switchMode('login')}
-                        type="button"
-                    >
-                        Iniciar sesión
-                    </button>
-                    <button
-                        className={`login-tab ${mode === 'register' ? 'active' : ''}`}
-                        onClick={() => switchMode('register')}
-                        type="button"
-                    >
-                        Registrarse
-                    </button>
+                <div className="admin-register-badge">
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}><User size={16} /> Cuenta de Administrador</span>
                 </div>
 
                 <div className="login-card">
@@ -171,13 +149,13 @@ export default function LoginPage() {
 
                     <form className="login-form" onSubmit={handleSubmit} noValidate>
                         <div className="login-field">
-                            <label htmlFor="login-email">Correo electrónico</label>
+                            <label htmlFor="admin-email">Correo electrónico</label>
                             <input
-                                id="login-email"
+                                id="admin-email"
                                 type="email"
                                 value={email}
                                 onChange={e => { setEmail(e.target.value); setErrors(p => ({ ...p, email: undefined })); }}
-                                placeholder="tu@correo.com"
+                                placeholder="admin@correo.com"
                                 className={errors.email ? 'input-error' : ''}
                                 autoComplete="email"
                                 disabled={submitting}
@@ -186,58 +164,50 @@ export default function LoginPage() {
                         </div>
 
                         <div className="login-field">
-                            <label htmlFor="login-password">Contraseña</label>
+                            <label htmlFor="admin-password">Contraseña</label>
                             <input
-                                id="login-password"
+                                id="admin-password"
                                 type="password"
                                 value={password}
                                 onChange={e => { setPassword(e.target.value); setErrors(p => ({ ...p, password: undefined })); }}
                                 placeholder="Mínimo 6 caracteres"
                                 className={errors.password ? 'input-error' : ''}
-                                autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                                autoComplete="new-password"
                                 disabled={submitting}
                             />
                             {errors.password && <p className="login-field-error">{errors.password}</p>}
                         </div>
 
-                        {mode === 'register' && (
-                            <div className="login-field">
-                                <label htmlFor="login-confirm">Confirmar contraseña</label>
-                                <input
-                                    id="login-confirm"
-                                    type="password"
-                                    value={confirmPassword}
-                                    onChange={e => { setConfirmPassword(e.target.value); setErrors(p => ({ ...p, confirm: undefined })); }}
-                                    placeholder="Repite tu contraseña"
-                                    className={errors.confirm ? 'input-error' : ''}
-                                    autoComplete="new-password"
-                                    disabled={submitting}
-                                />
-                                {errors.confirm && <p className="login-field-error">{errors.confirm}</p>}
-                            </div>
-                        )}
+                        <div className="login-field">
+                            <label htmlFor="admin-confirm">Confirmar contraseña</label>
+                            <input
+                                id="admin-confirm"
+                                type="password"
+                                value={confirmPassword}
+                                onChange={e => { setConfirmPassword(e.target.value); setErrors(p => ({ ...p, confirm: undefined })); }}
+                                placeholder="Repite tu contraseña"
+                                className={errors.confirm ? 'input-error' : ''}
+                                autoComplete="new-password"
+                                disabled={submitting}
+                            />
+                            {errors.confirm && <p className="login-field-error">{errors.confirm}</p>}
+                        </div>
 
                         <button
                             type="submit"
-                            className="login-submit"
+                            className="login-submit admin-submit"
                             disabled={submitting}
                         >
                             {submitting && <span className="login-spinner" />}
-                            {mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}
+                            <Shield size={18} className="inline mr-2" /> Crear cuenta de Administrador
                         </button>
-
-                        {mode === 'register' && (
-                            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-                                <a href="/admin/register" className="btn btn-ghost btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: 'var(--muted-foreground)' }}>
-                                    <Shield size={16} /> Registrarse como Administrador
-                                </a>
-                            </div>
-                        )}
                     </form>
                 </div>
 
                 <div className="login-back">
                     <a href="/">← Volver a la tienda</a>
+                    <span style={{ margin: '0 0.5rem' }}>|</span>
+                    <a href="/login">Iniciar sesión como usuario</a>
                 </div>
             </div>
         </div>
