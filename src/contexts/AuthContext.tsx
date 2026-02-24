@@ -19,6 +19,7 @@ interface AuthContextType {
     isAdmin: boolean;
     signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>;
     signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
+    signInWithGoogle: (isAdminLogin?: boolean) => Promise<void>;
     signOut: () => Promise<void>;
     refreshProfile: () => Promise<void>;
 }
@@ -112,6 +113,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return { error };
     };
 
+    const signInWithGoogle = async (isAdminLogin = false) => {
+        // Store login type in cookie (server-readable) since
+        // custom query params are lost through the OAuth redirect chain
+        document.cookie = `oauth_login_type=${isAdminLogin ? 'admin' : 'user'}; path=/; max-age=600; SameSite=Lax`;
+
+        const redirectTo = `${window.location.origin}/auth/callback`;
+
+        await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: { redirectTo },
+        });
+    };
+
     const signOut = async () => {
         await supabase.auth.signOut();
         setProfile(null);
@@ -131,6 +145,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 isAdmin,
                 signUp,
                 signIn,
+                signInWithGoogle,
                 signOut,
                 refreshProfile,
             }}
