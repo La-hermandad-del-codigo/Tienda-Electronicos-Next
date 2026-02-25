@@ -29,12 +29,20 @@ export function useCart() {
             const existing = prev.find(item => item.product.id === product.id);
             let updated: CartItem[];
             if (existing) {
+                // Verificar si hay stock disponible para incrementar
+                if (existing.quantity >= product.stock) {
+                    return prev;
+                }
                 updated = prev.map(item =>
                     item.product.id === product.id
                         ? { ...item, quantity: item.quantity + 1 }
                         : item
                 );
             } else {
+                // Verificar si hay stock para agregar el primero
+                if (product.stock <= 0) {
+                    return prev;
+                }
                 updated = [...prev, { product, quantity: 1 }];
             }
             saveToStorage(STORAGE_KEY, updated);
@@ -56,8 +64,14 @@ export function useCart() {
             return;
         }
         setItems(prev => {
+            const item = prev.find(i => i.product.id === productId);
+            if (!item) return prev;
+
+            // Cap quantity at available stock
+            const safeQuantity = Math.min(quantity, item.product.stock);
+
             const updated = prev.map(item =>
-                item.product.id === productId ? { ...item, quantity } : item
+                item.product.id === productId ? { ...item, quantity: safeQuantity } : item
             );
             saveToStorage(STORAGE_KEY, updated);
             return updated;

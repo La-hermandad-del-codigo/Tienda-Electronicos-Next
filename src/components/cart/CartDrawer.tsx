@@ -102,10 +102,16 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                                             <button
                                                 className="qty-btn"
                                                 onClick={() => onUpdateQuantity(item.product.id, item.quantity + 1)}
+                                                disabled={item.quantity >= item.product.stock}
                                                 aria-label="Aumentar cantidad"
                                             >
                                                 +
                                             </button>
+                                            {item.quantity >= item.product.stock && (
+                                                <span className="stock-limit-msg" style={{ fontSize: '0.7rem', color: 'var(--danger-color, #dc3545)', marginLeft: '0.5rem' }}>
+                                                    Máximo disponible
+                                                </span>
+                                            )}
                                             <button
                                                 className="btn-icon btn-icon-danger cart-item-remove"
                                                 onClick={() => onRemoveItem(item.product.id)}

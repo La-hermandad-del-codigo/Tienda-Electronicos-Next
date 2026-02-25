@@ -202,7 +202,11 @@ export const ProductList: React.FC<ProductListProps> = ({
                                                 disabled={product.stock === 0}
                                                 style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
                                             >
+<<<<<<< HEAD
                                                 <ShoppingCart size={16} /> Agregar
+=======
+                                                {product.stock === 0 ? '🚫 Sin producto' : '🛒 Agregar'}
+>>>>>>> f1fa6d5 (Agregue imagenes y el stock)
                                             </button>
                                         </div>
                                     </div>

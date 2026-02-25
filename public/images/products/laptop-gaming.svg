@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="400" height="250">
+  <defs>
+    <linearGradient id="bgLaptop" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a1a"/>
+      <stop offset="100%" style="stop-color:#0d0d15"/>
+    </linearGradient>
+    <linearGradient id="laptopBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3a3a3a"/>
+      <stop offset="100%" style="stop-color:#2a2a2a"/>
+    </linearGradient>
+    <linearGradient id="screenL" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a2040"/>
+      <stop offset="100%" style="stop-color:#0f1525"/>
+    </linearGradient>
+    <filter id="kbGlow">
+      <feGaussianBlur stdDeviation="1.5"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="250" fill="url(#bgLaptop)"/>
+  
+  <!-- Laptop screen (tilted back) -->
+  <path d="M95,20 L305,20 L320,150 L80,150 Z" fill="url(#laptopBody)"/>
+  <path d="M105,28 L295,28 L308,143 L88,143 Z" fill="url(#screenL)"/>
+  
+  <!-- Screen content - gaming/specs -->
+  <!-- VICTUS logo area -->
+  <polygon points="195,70 185,90 195,85 205,90" fill="#44cc44" opacity="0.6"/>
+  <text x="200" y="105" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-family="Arial, sans-serif" font-size="10" font-weight="bold">VICTUS</text>
+  
+  <!-- Spec badges on screen -->
+  <!-- RTX badge -->
+  <rect x="100" y="55" width="45" height="18" rx="3" fill="rgba(118,185,0,0.3)"/>
+  <text x="122" y="67" text-anchor="middle" fill="#76b900" font-family="Arial, sans-serif" font-size="7" font-weight="bold">RTX</text>
+  
+  <!-- AMD badge -->
+  <rect x="100" y="35" width="45" height="16" rx="3" fill="rgba(237,28,36,0.2)"/>
+  <text x="122" y="46" text-anchor="middle" fill="#ed1c24" font-family="Arial, sans-serif" font-size="6" font-weight="bold">RYZEN 5</text>
+  
+  <!-- Right side specs -->
+  <rect x="260" y="35" width="38" height="14" rx="2" fill="rgba(255,150,255,0.15)"/>
+  <text x="279" y="45" text-anchor="middle" fill="rgba(255,150,255,0.7)" font-family="Arial, sans-serif" font-size="6">8GB RAM</text>
+  
+  <rect x="255" y="55" width="44" height="14" rx="2" fill="rgba(255,200,100,0.15)"/>
+  <text x="277" y="65" text-anchor="middle" fill="rgba(255,200,100,0.7)" font-family="Arial, sans-serif" font-size="6">512GB SSD</text>
+  
+  <rect x="252" y="75" width="50" height="14" rx="2" fill="rgba(100,200,255,0.15)"/>
+  <text x="277" y="85" text-anchor="middle" fill="rgba(100,200,255,0.7)" font-family="Arial, sans-serif" font-size="5.5">RTX 3050</text>
+  
+  <!-- Laptop base/keyboard -->
+  <path d="M60,150 L340,150 L355,210 L45,210 Z" fill="url(#laptopBody)"/>
+  
+  <!-- Keyboard area -->
+  <rect x="80" y="158" width="240" height="38" rx="3" fill="rgba(0,0,0,0.3)"/>
+  
+  <!-- Keyboard keys with RGB glow -->
+  <!-- Row 1 -->
+  <rect x="85" y="160" width="10" height="7" rx="1" fill="rgba(255,50,50,0.4)"/>
+  <rect x="97" y="160" width="10" height="7" rx="1" fill="rgba(255,100,50,0.4)"/>
+  <rect x="109" y="160" width="10" height="7" rx="1" fill="rgba(255,200,50,0.4)"/>
+  <rect x="121" y="160" width="10" height="7" rx="1" fill="rgba(200,255,50,0.4)"/>
+  <rect x="133" y="160" width="10" height="7" rx="1" fill="rgba(50,255,50,0.4)"/>
+  <rect x="145" y="160" width="10" height="7" rx="1" fill="rgba(50,255,150,0.4)"/>
+  <rect x="157" y="160" width="10" height="7" rx="1" fill="rgba(50,255,255,0.4)"/>
+  <rect x="169" y="160" width="10" height="7" rx="1" fill="rgba(50,150,255,0.4)"/>
+  <rect x="181" y="160" width="10" height="7" rx="1" fill="rgba(50,50,255,0.4)"/>
+  <rect x="193" y="160" width="10" height="7" rx="1" fill="rgba(150,50,255,0.4)"/>
+  <rect x="205" y="160" width="10" height="7" rx="1" fill="rgba(255,50,255,0.4)"/>
+  <rect x="217" y="160" width="10" height="7" rx="1" fill="rgba(255,50,150,0.4)"/>
+  <rect x="229" y="160" width="10" height="7" rx="1" fill="rgba(255,50,100,0.4)"/>
+  <rect x="241" y="160" width="10" height="7" rx="1" fill="rgba(255,100,50,0.4)"/>
+  <rect x="253" y="160" width="10" height="7" rx="1" fill="rgba(255,50,50,0.4)"/>
+  <rect x="265" y="160" width="10" height="7" rx="1" fill="rgba(200,50,255,0.4)"/>
+  <rect x="277" y="160" width="10" height="7" rx="1" fill="rgba(100,50,255,0.4)"/>
+  <rect x="289" y="160" width="10" height="7" rx="1" fill="rgba(50,100,255,0.4)"/>
+  <rect x="301" y="160" width="10" height="7" rx="1" fill="rgba(50,200,255,0.4)"/>
+  
+  <!-- Row 2 -->
+  <rect x="88" y="170" width="10" height="7" rx="1" fill="rgba(50,255,100,0.4)"/>
+  <rect x="100" y="170" width="10" height="7" rx="1" fill="rgba(50,255,200,0.4)"/>
+  <rect x="112" y="170" width="10" height="7" rx="1" fill="rgba(50,200,255,0.4)"/>
+  <rect x="124" y="170" width="10" height="7" rx="1" fill="rgba(50,100,255,0.4)"/>
+  <rect x="136" y="170" width="10" height="7" rx="1" fill="rgba(150,50,255,0.4)"/>
+  <rect x="148" y="170" width="10" height="7" rx="1" fill="rgba(255,50,200,0.4)"/>
+  <rect x="160" y="170" width="10" height="7" rx="1" fill="rgba(255,50,100,0.4)"/>
+  <rect x="172" y="170" width="10" height="7" rx="1" fill="rgba(255,100,50,0.4)"/>
+  <rect x="184" y="170" width="10" height="7" rx="1" fill="rgba(255,200,50,0.4)"/>
+  <rect x="196" y="170" width="10" height="7" rx="1" fill="rgba(200,255,50,0.4)"/>
+  <rect x="208" y="170" width="10" height="7" rx="1" fill="rgba(50,255,100,0.4)"/>
+  <rect x="220" y="170" width="10" height="7" rx="1" fill="rgba(50,255,200,0.4)"/>
+  <rect x="232" y="170" width="10" height="7" rx="1" fill="rgba(50,200,255,0.4)"/>
+  <rect x="244" y="170" width="10" height="7" rx="1" fill="rgba(50,100,255,0.4)"/>
+  <rect x="256" y="170" width="10" height="7" rx="1" fill="rgba(150,50,255,0.4)"/>
+  <rect x="268" y="170" width="10" height="7" rx="1" fill="rgba(255,50,200,0.4)"/>
+  <rect x="280" y="170" width="10" height="7" rx="1" fill="rgba(255,100,50,0.4)"/>
+  <rect x="292" y="170" width="25" height="7" rx="1" fill="rgba(50,150,255,0.4)"/>
+  
+  <!-- Row 3 -->
+  <rect x="90" y="180" width="14" height="7" rx="1" fill="rgba(255,50,100,0.35)"/>
+  <rect x="106" y="180" width="10" height="7" rx="1" fill="rgba(255,150,50,0.35)"/>
+  <rect x="118" y="180" width="10" height="7" rx="1" fill="rgba(255,255,50,0.35)"/>
+  <rect x="130" y="180" width="10" height="7" rx="1" fill="rgba(100,255,50,0.35)"/>
+  <rect x="142" y="180" width="10" height="7" rx="1" fill="rgba(50,255,150,0.35)"/>
+  <rect x="154" y="180" width="10" height="7" rx="1" fill="rgba(50,200,255,0.35)"/>
+  <rect x="166" y="180" width="10" height="7" rx="1" fill="rgba(50,100,255,0.35)"/>
+  <rect x="178" y="180" width="10" height="7" rx="1" fill="rgba(100,50,255,0.35)"/>
+  <rect x="190" y="180" width="10" height="7" rx="1" fill="rgba(200,50,255,0.35)"/>
+  <rect x="202" y="180" width="10" height="7" rx="1" fill="rgba(255,50,200,0.35)"/>
+  <rect x="214" y="180" width="10" height="7" rx="1" fill="rgba(255,50,100,0.35)"/>
+  <rect x="226" y="180" width="10" height="7" rx="1" fill="rgba(255,150,50,0.35)"/>
+  <rect x="238" y="180" width="10" height="7" rx="1" fill="rgba(100,255,50,0.35)"/>
+  <rect x="250" y="180" width="10" height="7" rx="1" fill="rgba(50,255,200,0.35)"/>
+  <rect x="262" y="180" width="55" height="7" rx="1" fill="rgba(50,100,255,0.35)"/>
+  
+  <!-- Spacebar row -->
+  <rect x="95" y="190" width="12" height="5" rx="1" fill="rgba(200,50,255,0.3)"/>
+  <rect x="110" y="190" width="12" height="5" rx="1" fill="rgba(255,50,150,0.3)"/>
+  <rect x="125" y="190" width="12" height="5" rx="1" fill="rgba(255,100,50,0.3)"/>
+  <rect x="140" y="190" width="120" height="5" rx="1" fill="rgba(100,200,255,0.3)"/>
+  <rect x="265" y="190" width="12" height="5" rx="1" fill="rgba(255,50,100,0.3)"/>
+  <rect x="280" y="190" width="12" height="5" rx="1" fill="rgba(200,50,255,0.3)"/>
+  <rect x="295" y="190" width="12" height="5" rx="1" fill="rgba(50,200,255,0.3)"/>
+  
+  <!-- RGB keyboard glow -->
+  <rect x="80" y="155" width="240" height="42" rx="3" fill="url(#bgLaptop)" opacity="0" filter="url(#kbGlow)"/>
+  
+  <!-- Trackpad -->
+  <rect x="170" y="198" width="60" height="8" rx="2" fill="rgba(60,60,60,0.6)"/>
+  
+  <!-- Front edge -->
+  <path d="M45,210 L355,210 L360,215 L40,215 Z" fill="#383838"/>
+</svg>

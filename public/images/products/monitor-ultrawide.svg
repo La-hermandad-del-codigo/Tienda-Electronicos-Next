@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="400" height="250">
+  <defs>
+    <linearGradient id="bgMon1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a14"/>
+      <stop offset="100%" style="stop-color:#0d1020"/>
+    </linearGradient>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4a3080"/>
+      <stop offset="40%" style="stop-color:#2a4090"/>
+      <stop offset="100%" style="stop-color:#1a2050"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="250" fill="url(#bgMon1)"/>
+  
+  <!-- Monitor - ultrawide curved shape -->
+  <!-- Back bezel -->
+  <path d="M30,25 Q200,15 370,25 L365,180 Q200,185 35,180 Z" fill="#222"/>
+  <!-- Screen bezel -->
+  <path d="M38,30 Q200,21 362,30 L358,174 Q200,179 42,174 Z" fill="#111"/>
+  <!-- Screen -->
+  <path d="M45,35 Q200,27 355,35 L351,170 Q200,175 49,170 Z" fill="url(#sky)"/>
+  
+  <!-- Screen content - dramatic sky landscape -->
+  <!-- Clouds -->
+  <ellipse cx="120" cy="60" rx="40" ry="15" fill="rgba(255,255,255,0.08)"/>
+  <ellipse cx="280" cy="50" rx="50" ry="12" fill="rgba(255,255,255,0.06)"/>
+  
+  <!-- Fighter jets -->
+  <polygon points="250,75 240,80 260,80" fill="rgba(100,100,120,0.6)"/>
+  <line x1="240" y1="80" x2="235" y2="82" stroke="rgba(100,100,120,0.5)" stroke-width="1"/>
+  <line x1="260" y1="80" x2="265" y2="82" stroke="rgba(100,100,120,0.5)" stroke-width="1"/>
+  
+  <polygon points="290,90 282,94 298,94" fill="rgba(80,80,100,0.5)"/>
+  
+  <!-- Pilot/character in foreground -->
+  <ellipse cx="200" cy="130" rx="25" ry="30" fill="rgba(60,60,80,0.5)"/>
+  <ellipse cx="200" cy="110" rx="15" ry="18" fill="rgba(70,70,90,0.5)"/>
+  <!-- Helmet visor -->
+  <ellipse cx="200" cy="112" rx="12" ry="8" fill="rgba(100,150,200,0.3)"/>
+  
+  <!-- Mountains/ground -->
+  <path d="M45,150 L100,120 L150,140 L200,110 L250,135 L300,115 L355,145 L355,170 Q200,175 49,170 Z" fill="rgba(40,40,60,0.6)"/>
+  
+  <!-- UltraGear text -->
+  <text x="200" y="47" text-anchor="middle" fill="rgba(255,255,255,0.15)" font-family="Arial, sans-serif" font-size="8" font-weight="bold">UltraGear™</text>
+  
+  <!-- Monitor stand -->
+  <rect x="185" y="180" width="30" height="25" rx="2" fill="#222"/>
+  <!-- Stand base with red accent -->
+  <path d="M150,210 L250,210 L260,218 L255,220 L145,220 L140,218 Z" fill="#2a2a2a"/>
+  <line x1="150" y1="218" x2="250" y2="218" stroke="#cc2222" stroke-width="1.5" opacity="0.7"/>
+  
+  <!-- Thin bezels highlight -->
+  <path d="M38,30 Q200,21 362,30" fill="none" stroke="#333" stroke-width="0.5"/>
+  
+  <!-- Label -->
+  <text x="200" y="240" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-family="Arial, sans-serif" font-size="8">34" Ultrawide · 3440×1440 · Curva 1800R</text>
+</svg>

@@ -39,9 +39,13 @@ export function useProducts() {
 
             // Step 2: fetch
             updateTask('fetch-products', 'loading');
+
+            // Usar un timestamp para evitar caché agresivo de Next.js/Browser
             const { data, error: fetchError } = await supabase
                 .from('products')
                 .select('*')
+                // Dummy filter to bust potential GET caches
+                .neq('id', '00000000-0000-0000-0000-000000000000')
                 .order('created_at', { ascending: false });
 
             if (fetchError) {

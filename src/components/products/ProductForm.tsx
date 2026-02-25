@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Product, ProductFormData, CATEGORIES } from '../../types/product';
+import { getDefaultImageForCategory } from '../../utils/categoryImages';
 
 interface ProductFormProps {
     product?: Product | null;
@@ -21,6 +22,7 @@ const emptyForm: ProductFormData = {
 export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onCancel }) => {
     const [formData, setFormData] = useState<ProductFormData>(emptyForm);
     const [errors, setErrors] = useState<Partial<Record<keyof ProductFormData, string>>>({});
+    const [showImagePreview, setShowImagePreview] = useState(true);
 
     useEffect(() => {
         if (product) {
@@ -36,6 +38,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
             setFormData(emptyForm);
         }
         setErrors({});
+        setShowImagePreview(true);
     }, [product]);
 
     const validate = (): boolean => {
@@ -57,6 +60,16 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
             newErrors.category = 'Selecciona una categoría';
         }
 
+        // Validación opcional de image_url: aceptar http(s) o rutas locales que comiencen con '/'
+        if (formData.image_url && formData.image_url.trim()) {
+            const url = formData.image_url.trim();
+            const isAbsolute = /^https?:\/\//i.test(url);
+            const isLocal = url.startsWith('/');
+            if (!isAbsolute && !isLocal) {
+                newErrors.image_url = 'Introduce una URL válida (http(s) o ruta local que empiece con /)';
+            }
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -68,7 +81,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
                 ...formData,
                 name: formData.name.trim(),
                 description: formData.description.trim(),
-                image_url: formData.image_url.trim() || `https://picsum.photos/seed/${Date.now()}/400/300`,
+                image_url: formData.image_url.trim() || getDefaultImageForCategory(formData.category) || '',
             });
         }
     };
@@ -84,6 +97,16 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
         // Limpiar error del campo al editar
         if (errors[name as keyof ProductFormData]) {
             setErrors(prev => ({ ...prev, [name]: undefined }));
+        }
+    };
+
+    const applySuggestedImage = () => {
+        const suggestedImage = getDefaultImageForCategory(formData.category);
+        if (suggestedImage) {
+            setFormData(prev => ({
+                ...prev,
+                image_url: suggestedImage,
+            }));
         }
     };
 
@@ -171,15 +194,50 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onSubmit, onC
 
             <div className="form-group">
                 <label htmlFor="image_url">URL de imagen (opcional)</label>
-                <input
-                    id="image_url"
-                    name="image_url"
-                    type="url"
-                    value={formData.image_url}
-                    onChange={handleChange}
-                    placeholder="https://ejemplo.com/imagen.jpg"
-                />
+                <div className="image-input-wrapper">
+                    <input
+                        id="image_url"
+                        name="image_url"
+                        type="text"
+                        value={formData.image_url}
+                        onChange={(e) => {
+                            handleChange(e as any);
+                            setShowImagePreview(true);
+                        }}
+                        placeholder="https://ejemplo.com/imagen.jpg o /images/products/mi-imagen.jpg"
+                    />
+                    <button
+                        type="button"
+                        onClick={applySuggestedImage}
+                        className="btn-suggest-image"
+                        title="Usar imagen sugerida para la categoría"
+                    >
+                        💡 Sugerir
+                    </button>
+                </div>
                 <span className="field-hint">Si no se proporciona, se generará una imagen automáticamente.</span>
+
+                {formData.image_url && showImagePreview && (
+                    <div className="image-preview">
+                        <div className="preview-header">
+                            <span>Vista previa</span>
+                            <button
+                                type="button"
+                                onClick={() => setShowImagePreview(false)}
+                                className="btn-close-preview"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                        <img
+                            src={formData.image_url}
+                            alt="Vista previa del producto"
+                            onError={(e) => {
+                                (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjE0IiBmaWxsPSIjOTk5IiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JbWFnZW4gbm8gdiYjxqFemFkYTwvdGV4dD48L3N2Zz4=';
+                            }}
+                        />
+                    </div>
+                )}
             </div>
 
             <div className="form-actions">

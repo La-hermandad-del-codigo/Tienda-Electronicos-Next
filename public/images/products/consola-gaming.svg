@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="400" height="250">
+  <defs>
+    <linearGradient id="bgConsola" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a0a2e"/>
+      <stop offset="100%" style="stop-color:#0d1b3e"/>
+    </linearGradient>
+    <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e8e8e8"/>
+      <stop offset="100%" style="stop-color:#c0c0c0"/>
+    </linearGradient>
+    <linearGradient id="screenGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="50%" style="stop-color:#222244"/>
+      <stop offset="100%" style="stop-color:#111133"/>
+    </linearGradient>
+    <filter id="glowC">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background with ambient lighting -->
+  <rect width="400" height="250" fill="url(#bgConsola)"/>
+  <!-- Ambient red/blue glow behind -->
+  <ellipse cx="320" cy="60" rx="100" ry="80" fill="#ff2244" opacity="0.12" filter="url(#glowC)"/>
+  <ellipse cx="80" cy="80" rx="80" ry="60" fill="#2244ff" opacity="0.1" filter="url(#glowC)"/>
+  
+  <!-- Handheld console body -->
+  <!-- Left grip -->
+  <rect x="55" y="60" width="65" height="140" rx="30" ry="20" fill="url(#bodyGrad)"/>
+  <!-- Right grip -->
+  <rect x="280" y="60" width="65" height="140" rx="30" ry="20" fill="url(#bodyGrad)"/>
+  <!-- Center body -->
+  <rect x="85" y="55" width="230" height="148" rx="12" fill="url(#bodyGrad)"/>
+  
+  <!-- Screen -->
+  <rect x="105" y="65" width="190" height="128" rx="6" fill="url(#screenGrad)"/>
+  
+  <!-- Screen content - Game Library -->
+  <rect x="110" y="70" width="180" height="16" rx="2" fill="rgba(255,255,255,0.08)"/>
+  <text x="120" y="82" fill="rgba(255,255,255,0.6)" font-family="Arial, sans-serif" font-size="8" font-weight="bold">Game Library</text>
+  
+  <!-- Game tiles -->
+  <rect x="112" y="92" width="42" height="30" rx="3" fill="#443366"/>
+  <rect x="158" y="92" width="42" height="30" rx="3" fill="#335544"/>
+  <rect x="204" y="92" width="42" height="30" rx="3" fill="#554433"/>
+  <rect x="250" y="92" width="42" height="30" rx="3" fill="#334455"/>
+  
+  <rect x="112" y="126" width="42" height="30" rx="3" fill="#553344"/>
+  <rect x="158" y="126" width="42" height="30" rx="3" fill="#445533"/>
+  <rect x="204" y="126" width="42" height="30" rx="3" fill="#334455"/>
+  <rect x="250" y="126" width="42" height="30" rx="3" fill="#554422"/>
+  
+  <rect x="112" y="160" width="42" height="26" rx="3" fill="#443355"/>
+  <rect x="158" y="160" width="42" height="26" rx="3" fill="#335544"/>
+  <rect x="204" y="160" width="42" height="26" rx="3" fill="#445544"/>
+  <rect x="250" y="160" width="42" height="26" rx="3" fill="#553344"/>
+  
+  <!-- Left controls - D-pad/joystick -->
+  <circle cx="87" cy="100" r="12" fill="#bbb" stroke="#999" stroke-width="1"/>
+  <circle cx="87" cy="100" r="8" fill="#aaa"/>
+  <!-- RGB glow on left stick -->
+  <circle cx="87" cy="100" r="14" fill="none" stroke="#00ccff" stroke-width="1.5" opacity="0.6"/>
+  
+  <!-- Left buttons below -->
+  <circle cx="78" cy="145" r="5" fill="#bbb"/>
+  <circle cx="96" cy="145" r="5" fill="#bbb"/>
+  
+  <!-- Right controls - buttons -->
+  <circle cx="313" cy="90" r="6" fill="#5588dd" opacity="0.9"/>
+  <circle cx="327" cy="100" r="6" fill="#dd4444" opacity="0.9"/>
+  <circle cx="299" cy="100" r="6" fill="#dddd44" opacity="0.9"/>
+  <circle cx="313" cy="110" r="6" fill="#44dd44" opacity="0.9"/>
+  
+  <!-- Right joystick -->
+  <circle cx="313" cy="145" r="10" fill="#bbb" stroke="#999" stroke-width="1"/>
+  <circle cx="313" cy="145" r="6" fill="#aaa"/>
+  
+  <!-- Speaker grills -->
+  <rect x="60" y="175" width="20" height="15" rx="3" fill="rgba(0,0,0,0.15)"/>
+  <rect x="320" y="175" width="20" height="15" rx="3" fill="rgba(0,0,0,0.15)"/>
+  
+  <!-- Subtle reflection -->
+  <rect x="105" y="65" width="190" height="40" rx="6" fill="rgba(255,255,255,0.03)"/>
+  
+  <!-- Label -->
+  <text x="200" y="242" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-family="Arial, sans-serif" font-size="8">Última Generación · 1TB SSD · 4K HDR</text>
+</svg>

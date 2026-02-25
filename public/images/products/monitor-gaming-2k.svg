@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250" width="400" height="250">
+  <defs>
+    <linearGradient id="bgMon2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a14"/>
+      <stop offset="100%" style="stop-color:#0d1020"/>
+    </linearGradient>
+    <linearGradient id="gameScene" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2a1540"/>
+      <stop offset="50%" style="stop-color:#1a2050"/>
+      <stop offset="100%" style="stop-color:#0f1525"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="250" fill="url(#bgMon2)"/>
+  
+  <!-- Monitor frame -->
+  <rect x="65" y="15" width="270" height="175" rx="6" fill="#1a1a1a"/>
+  <!-- Thin bezel -->
+  <rect x="70" y="19" width="260" height="165" rx="3" fill="#111"/>
+  <!-- Screen -->
+  <rect x="74" y="22" width="252" height="158" rx="2" fill="url(#gameScene)"/>
+  
+  <!-- Screen content - fantasy game scene -->
+  <!-- Lava/fire effect background -->
+  <ellipse cx="200" cy="60" rx="80" ry="30" fill="rgba(255,80,20,0.15)"/>
+  <ellipse cx="220" cy="50" rx="40" ry="20" fill="rgba(255,120,20,0.1)"/>
+  
+  <!-- Monster silhouette -->
+  <ellipse cx="200" cy="100" rx="35" ry="50" fill="rgba(30,20,40,0.7)"/>
+  <!-- Monster head -->
+  <ellipse cx="200" cy="55" rx="20" ry="22" fill="rgba(40,25,50,0.8)"/>
+  <!-- Horns -->
+  <path d="M185,40 L175,20 L182,38" fill="rgba(50,30,60,0.8)"/>
+  <path d="M215,40 L225,20 L218,38" fill="rgba(50,30,60,0.8)"/>
+  <!-- Glowing eyes -->
+  <circle cx="192" cy="52" r="3" fill="#ff4400" opacity="0.9"/>
+  <circle cx="208" cy="52" r="3" fill="#ff4400" opacity="0.9"/>
+  <!-- Lava cracks on body -->
+  <line x1="185" y1="80" x2="190" y2="110" stroke="#ff4400" stroke-width="1.5" opacity="0.5"/>
+  <line x1="210" y1="75" x2="215" y2="105" stroke="#ff6600" stroke-width="1" opacity="0.4"/>
+  <line x1="195" y1="90" x2="200" y2="120" stroke="#ff3300" stroke-width="1" opacity="0.3"/>
+  
+  <!-- Ground/landscape -->
+  <path d="M74,150 L120,130 L160,145 L200,125 L240,140 L280,128 L326,148 L326,180 L74,180 Z" fill="rgba(25,20,35,0.8)"/>
+  <!-- Lava pools -->
+  <ellipse cx="150" cy="165" rx="20" ry="5" fill="rgba(255,80,20,0.3)"/>
+  <ellipse cx="260" cy="160" rx="15" ry="4" fill="rgba(255,100,20,0.25)"/>
+  
+  <!-- Spec badges on left side of image -->
+  <rect x="80" y="35" width="28" height="22" rx="3" fill="rgba(0,0,0,0.6)" stroke="rgba(255,200,50,0.5)" stroke-width="0.8"/>
+  <text x="94" y="46" text-anchor="middle" fill="rgba(255,200,50,0.9)" font-family="Arial, sans-serif" font-size="7" font-weight="bold">32"</text>
+  <text x="94" y="54" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-family="Arial, sans-serif" font-size="4"></text>
+  
+  <rect x="80" y="62" width="28" height="22" rx="3" fill="rgba(0,0,0,0.6)" stroke="rgba(255,200,50,0.5)" stroke-width="0.8"/>
+  <text x="94" y="73" text-anchor="middle" fill="rgba(255,200,50,0.9)" font-family="Arial, sans-serif" font-size="6" font-weight="bold">2K</text>
+  <text x="94" y="80" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-family="Arial, sans-serif" font-size="4">QHD</text>
+  
+  <rect x="80" y="89" width="28" height="22" rx="3" fill="rgba(0,0,0,0.6)" stroke="rgba(255,200,50,0.5)" stroke-width="0.8"/>
+  <text x="94" y="100" text-anchor="middle" fill="rgba(255,200,50,0.9)" font-family="Arial, sans-serif" font-size="5.5" font-weight="bold">165Hz</text>
+  <text x="94" y="107" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-family="Arial, sans-serif" font-size="4">IPS</text>
+  
+  <!-- Bottom chin of monitor -->
+  <rect x="65" y="184" width="270" height="8" rx="2" fill="#1a1a1a"/>
+  <!-- Logo dot -->
+  <circle cx="200" cy="188" r="2" fill="#444"/>
+  
+  <!-- V-shaped stand -->
+  <path d="M190,192 L175,220 L180,222 L200,198 L220,222 L225,220 L210,192 Z" fill="#222"/>
+  <!-- Stand base -->
+  <rect x="160" y="220" width="80" height="6" rx="3" fill="#2a2a2a"/>
+  
+  <!-- Label -->
+  <text x="200" y="242" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-family="Arial, sans-serif" font-size="8">27" · 2K QHD · 165Hz · 1ms · IPS</text>
+</svg>

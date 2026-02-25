@@ -1,0 +1,21 @@
+<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="250" fill="#f0f0f0"/>
+  <!-- Keyboard Base -->
+  <rect x="80" y="90" width="240" height="70" rx="8" fill="#ffffff" stroke="#ddd" stroke-width="2"/>
+  <!-- Keys (Minimalist) -->
+  <rect x="95" y="105" width="20" height="15" rx="2" fill="#eee"/>
+  <rect x="120" y="105" width="20" height="15" rx="2" fill="#eee"/>
+  <rect x="145" y="105" width="20" height="15" rx="2" fill="#eee"/>
+  <rect x="170" y="105" width="20" height="15" rx="2" fill="#eee"/>
+  <rect x="195" y="105" width="20" height="15" rx="2" fill="#eee"/>
+  <rect x="220" y="105" width="20" height="15" rx="2" fill="#eee"/>
+  <rect x="245" y="105" width="20" height="15" rx="2" fill="#eee"/>
+  <rect x="270" y="105" width="20" height="15" rx="2" fill="#eee"/>
+
+  <rect x="95" y="125" width="30" height="15" rx="2" fill="#eee"/>
+  <rect x="130" y="125" width="140" height="15" rx="2" fill="#eee"/>
+  <rect x="275" y="125" width="30" height="15" rx="2" fill="#eee"/>
+  
+  <!-- Wireless icon -->
+  <path d="M190,75 Q200,65 210,75M185,70 Q200,55 215,70M180,65 Q200,45 220,65" fill="none" stroke="#667eea" stroke-width="2" stroke-linecap="round"/>
+</svg>

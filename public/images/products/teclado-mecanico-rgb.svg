@@ -1,0 +1,47 @@
+<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="250" fill="#1a1a1a"/>
+  <!-- Keyboard Base -->
+  <rect x="50" y="80" width="300" height="100" rx="10" fill="#333" stroke="#444" stroke-width="2"/>
+  <!-- Keys -->
+  <g opacity="0.8">
+    <rect x="65" y="95" width="20" height="20" rx="2" fill="#ff0000"/>
+    <rect x="90" y="95" width="20" height="20" rx="2" fill="#ff7f00"/>
+    <rect x="115" y="95" width="20" height="20" rx="2" fill="#ffff00"/>
+    <rect x="140" y="95" width="20" height="20" rx="2" fill="#00ff00"/>
+    <rect x="165" y="95" width="20" height="20" rx="2" fill="#0000ff"/>
+    <rect x="190" y="95" width="20" height="20" rx="2" fill="#4b0082"/>
+    <rect x="215" y="95" width="20" height="20" rx="2" fill="#8b00ff"/>
+    <rect x="240" y="95" width="20" height="20" rx="2" fill="#ff0000"/>
+    <rect x="265" y="95" width="20" height="20" rx="2" fill="#ff7f00"/>
+    <rect x="290" y="95" width="20" height="20" rx="2" fill="#ffff00"/>
+    <rect x="315" y="95" width="20" height="20" rx="2" fill="#00ff00"/>
+
+    <rect x="65" y="120" width="20" height="20" rx="2" fill="#00ff00"/>
+    <rect x="90" y="120" width="20" height="20" rx="2" fill="#0000ff"/>
+    <rect x="115" y="120" width="20" height="20" rx="2" fill="#4b0082"/>
+    <rect x="140" y="120" width="20" height="20" rx="2" fill="#8b00ff"/>
+    <rect x="165" y="120" width="20" height="20" rx="2" fill="#ff0000"/>
+    <rect x="190" y="120" width="20" height="20" rx="2" fill="#ff7f00"/>
+    <rect x="215" y="120" width="20" height="20" rx="2" fill="#ffff00"/>
+    <rect x="240" y="120" width="20" height="20" rx="2" fill="#00ff00"/>
+    <rect x="265" y="120" width="20" height="20" rx="2" fill="#0000ff"/>
+    <rect x="290" y="120" width="20" height="20" rx="2" fill="#4b0082"/>
+    <rect x="315" y="120" width="20" height="20" rx="2" fill="#8b00ff"/>
+
+    <rect x="65" y="145" width="30" height="20" rx="2" fill="#4b0082"/>
+    <rect x="100" y="145" width="200" height="20" rx="2" fill="#8b00ff"/>
+    <rect x="305" y="145" width="30" height="20" rx="2" fill="#ff0000"/>
+  </g>
+  <!-- Glow effect -->
+  <rect x="50" y="175" width="300" height="5" opacity="0.3" fill="url(#rgbGradient)"/>
+  <defs>
+    <linearGradient id="rgbGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:rgb(255,0,0);stop-opacity:1" />
+      <stop offset="20%" style="stop-color:rgb(255,255,0);stop-opacity:1" />
+      <stop offset="40%" style="stop-color:rgb(0,255,0);stop-opacity:1" />
+      <stop offset="60%" style="stop-color:rgb(0,255,255);stop-opacity:1" />
+      <stop offset="80%" style="stop-color:rgb(0,0,255);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgb(255,0,255);stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

@@ -1,0 +1,13 @@
+<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="250" fill="#f8f9fa"/>
+  <!-- Phone Body -->
+  <rect x="160" y="40" width="80" height="170" rx="12" fill="#111" stroke="#333" stroke-width="2"/>
+  <!-- Screen -->
+  <rect x="163" y="43" width="74" height="164" rx="10" fill="#000"/>
+  <!-- Camera hole -->
+  <circle cx="200" cy="55" r="2" fill="#333"/>
+  <!-- UI elements -->
+  <rect x="175" y="180" width="50" height="1" rx="0.5" fill="#fff" opacity="0.4"/>
+  <rect x="175" y="70" width="30" height="4" rx="2" fill="#667eea" opacity="0.6"/>
+  <rect x="175" y="80" width="40" height="2" rx="1" fill="#fff" opacity="0.2"/>
+</svg>

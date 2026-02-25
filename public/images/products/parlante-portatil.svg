@@ -1,0 +1,17 @@
+<svg viewBox="0 0 400 250" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="250" fill="#34495e"/>
+  <!-- Speaker Body (Cylindrical look) -->
+  <rect x="160" y="60" width="80" height="130" rx="40" fill="#222" stroke="#444" stroke-width="2"/>
+  <!-- Mesh texture -->
+  <pattern id="mesh" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
+    <circle cx="2" cy="2" r="1" fill="#333"/>
+  </pattern>
+  <rect x="165" y="80" width="70" height="90" rx="35" fill="url(#mesh)"/>
+  <!-- Buttons -->
+  <circle cx="200" cy="180" r="5" fill="#667eea"/>
+  <rect x="185" y="180" width="10" height="2" fill="#fff" opacity="0.5"/>
+  <rect x="205" y="180" width="10" height="2" rx="1" fill="#fff" opacity="0.5"/>
+  <rect x="209" y="176" width="2" height="10" rx="1" fill="#fff" opacity="0.5"/>
+  <!-- Logo -->
+  <path d="M195,75 L205,75 L200,70 Z" fill="#667eea"/>
+</svg>
