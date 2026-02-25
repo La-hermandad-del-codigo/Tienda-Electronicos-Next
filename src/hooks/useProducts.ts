@@ -125,20 +125,21 @@ export function useProducts() {
     }, []);
 
     // Delete product (admin only — enforced by RLS)
-    const deleteProduct = useCallback(async (id: string): Promise<boolean> => {
+    const deleteProduct = useCallback(async (id: string): Promise<{ success: boolean; error?: string }> => {
         const { error: deleteError } = await supabase
             .from('products')
             .delete()
             .eq('id', id);
 
         if (deleteError) {
+            console.error("Error al eliminar producto:", deleteError);
             setError(deleteError.message);
-            return false;
+            return { success: false, error: deleteError.message };
         }
 
         setProducts(prev => prev.filter(p => p.id !== id));
         setError(null);
-        return true;
+        return { success: true };
     }, []);
 
     const getProductById = useCallback((id: string): Product | undefined => {
