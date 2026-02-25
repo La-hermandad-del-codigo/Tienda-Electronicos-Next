@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabase';
 export interface Profile {
     id: string;
     email: string;
-    role: 'user' | 'admin';
+    role: 'user' | 'admin' | 'comerciante';
     created_at: string;
 }
 
@@ -17,6 +17,7 @@ interface AuthContextType {
     profile: Profile | null;
     isLoading: boolean;
     isAdmin: boolean;
+    isComerciante: boolean;
     signUp: (email: string, password: string) => Promise<{ error: AuthError | null }>;
     signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
     signInWithGoogle: (isAdminLogin?: boolean) => Promise<void>;
@@ -134,6 +135,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const isAdmin = profile?.role === 'admin';
+    const isComerciante = profile?.role === 'comerciante';
 
     return (
         <AuthContext.Provider
@@ -143,6 +145,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 profile,
                 isLoading,
                 isAdmin,
+                isComerciante,
                 signUp,
                 signIn,
                 signInWithGoogle,

@@ -276,7 +276,11 @@ function LoginContent() {
                         </button>
 
                         {mode === 'register' && (
-                            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+                            <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center' }}>
+                                <a href="/comerciante/register" className="btn btn-ghost btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: 'var(--primary)' }}>
+                                    <Zap size={16} /> Registrarse como Comerciante
+                                </a>
+                                <div style={{ height: '1px', width: '60%', backgroundColor: 'rgba(255,255,255,0.05)' }} />
                                 <a href="/admin/register" className="btn btn-ghost btn-sm" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', color: 'var(--muted-foreground)' }}>
                                     <Shield size={16} /> Registrarse como Administrador
                                 </a>

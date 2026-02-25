@@ -34,6 +34,7 @@ export const Header: React.FC<HeaderProps> = ({ cartCount, onCartClick }) => {
                                 <div className="header-user">
                                     <span className="header-user-email" title={profile?.email ?? user.email ?? ''}>
                                         {profile?.role === 'admin' && <span className="header-role-badge">Admin</span>}
+                                        {profile?.role === 'comerciante' && <span className="header-role-badge" style={{ backgroundColor: 'var(--primary)', color: 'var(--primary-foreground)' }}>Comerciante</span>}
                                         {user.email}
                                     </span>
                                     <a href="/orders" className="btn btn-sm btn-ghost header-orders-btn" title="Mis pedidos" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
