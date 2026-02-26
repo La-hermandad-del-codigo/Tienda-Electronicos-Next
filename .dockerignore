@@ -1,0 +1,36 @@
+# Dependencias (se instalan dentro del contenedor)
+node_modules
+
+# Build local (se regenera en el contenedor)
+.next
+
+# Variables de entorno locales (se pasan via ARG/ENV en el build)
+.env
+.env.local
+.env*.local
+
+# Control de versiones
+.git
+.gitignore
+
+# Documentación y archivos de desarrollo
+doc/
+*.md
+README*
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+nginx/
+
+# Testing y scripts sueltos
+test-*.js
+*.test.*
+*.spec.*
+
+# IDE y OS
+.idea
+.vscode
+.DS_Store
+*.log
