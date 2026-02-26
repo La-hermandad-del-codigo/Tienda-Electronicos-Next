@@ -46,8 +46,11 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+# Asegurar que public/ existe aunque esté vacío
+RUN mkdir -p ./public
+
 # Copiar archivos necesarios del build
-COPY --from=builder /app/public ./public
+COPY --from=builder /app/public/ ./public/
 COPY --from=builder /app/next.config.js ./
 
 # Usar el output standalone de Next.js (más ligero)
