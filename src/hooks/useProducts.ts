@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Product, ProductFormData } from '../types/product';
 import { ProcessTask, ProcessStatus } from '../components/ui/ProcessIndicator';
 import { supabase } from '../lib/supabase';
@@ -15,6 +15,10 @@ export function useProducts() {
     const [categoryFilter, setCategoryFilter] = useState('');
     const [isLoaded, setIsLoaded] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // Guards contra race conditions en Strict Mode / hidratación
+    const isFetchingRef = useRef(false);
+    const isMountedRef = useRef(true);
 
     // Estados de tareas intermedias para el ProcessIndicator
     const [taskStatuses, setTaskStatuses] = useState<ProcessTask[]>([
@@ -31,6 +35,10 @@ export function useProducts() {
 
     // Fetch products from Supabase
     const fetchProducts = useCallback(async () => {
+        // Evitar fetches duplicados (Strict Mode monta dos veces)
+        if (isFetchingRef.current) return;
+        isFetchingRef.current = true;
+
         updateTask('connect-db', 'loading');
 
         try {
@@ -43,6 +51,9 @@ export function useProducts() {
                 .from('products')
                 .select('*')
                 .order('created_at', { ascending: false });
+
+            // Si el componente se desmontó durante el fetch, no actualizar estado
+            if (!isMountedRef.current) return;
 
             if (fetchError) {
                 updateTask('fetch-products', 'error', fetchError.message);
@@ -58,17 +69,26 @@ export function useProducts() {
             updateTask('sync-catalog', 'success', 'Catálogo sincronizado');
             setError(null);
         } catch (err) {
+            if (!isMountedRef.current) return;
             const message = err instanceof Error ? err.message : 'Error desconocido';
             updateTask('sync-catalog', 'error', message);
             setError(message);
         } finally {
-            setIsLoaded(true);
+            isFetchingRef.current = false;
+            if (isMountedRef.current) {
+                setIsLoaded(true);
+            }
         }
     }, [updateTask]);
 
     // Initial load
     useEffect(() => {
+        isMountedRef.current = true;
         fetchProducts();
+
+        return () => {
+            isMountedRef.current = false;
+        };
     }, [fetchProducts]);
 
     // Add product (admin only — enforced by RLS)
