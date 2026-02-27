@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  tienda-electronicos:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+    container_name: tienda-electronicos
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+    # NO se exponen puertos al host — el Nginx global accede por red interna
+    expose:
+      - "3000"
+    networks:
+      - global_net # Misma red que el Nginx global
+
+networks:
+  global_net:
+    external: true # Red ya creada por /app/infra/docker-compose.yml
