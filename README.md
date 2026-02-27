@@ -238,20 +238,20 @@ El proyecto está configurado para despliegue automático en **Vercel** desde la
 ### Pasos para configurar el despliegue
 
 1. Configurar el dominio
-    -Definir el nombre de la pagina
-    -Agregar la IP del VPS
+    - Definir el nombre de la pagina
+    - Agregar la IP del VPS
 2. Crear un usuario para evitar conflictos con el root en el VPS
 3. Instalación de herramientas en el VPS
-    -Git
-    -Docker
-    -Nginx
+    - Git
+    - Docker
+    - Nginx
 4. Configurar Nginx
-    -Conexión al dominio
+    - Conexión al dominio
 5. Obtencion de certificados HTTPS
 6. Configurar Docker
-    -Hacer un docker compose para el manejo de redes dentro del VPS
-    -Hacer un docker compose solo para el proyecto
-    -Hacer un docker file con los comandos necesarios para instalar dependencias dentro del docker compose
+    - Hacer un docker compose para el manejo de redes dentro del VPS
+    - Hacer un docker compose solo para el proyecto
+    - Hacer un docker file con los comandos necesarios para instalar dependencias dentro del docker compose
 
 ---
 
